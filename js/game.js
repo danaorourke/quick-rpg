@@ -37,8 +37,8 @@ var game={
 
 // movement - expand to include distance, too.
 function move(self,direction,amt) {
-	var b_h = garden.h - self.sprite.h -4;
-	var b_w = garden.w - self.sprite.w -4;
+	var b_h = area.h - self.sprite.h -4;
+	var b_w = area.w - self.sprite.w -4;
 
 	switch (direction) {
 		case 'up':

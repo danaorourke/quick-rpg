@@ -105,8 +105,8 @@ var character={
 		this.stats.e = 100;
 		this.state = 1;
 
-		var height = garden.h - this.sprite.h - 4;
-		var width = garden.w - this.sprite.w - 4;
+		var height = area.h - this.sprite.h - 4;
+		var width = area.w - this.sprite.w - 4;
 		//this.location.x = Math.floor(Math.random()*width);
 		//this.location.y = Math.floor(Math.random()*height);
 
