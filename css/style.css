@@ -1,0 +1,43 @@
+@charset "utf-8";
+/*-----------------------------------------------------
+ *	version:	 (4/18/13)	
+ *	origin:		nope.com by Dana O'Rourke @ CupofTeaCreations.com
+-------------------------------------------------------*/
+
+
+/* reset - based off html5reset.com
+-------------------------------------------------------*/
+html, body, div, span, object, iframe, h1, h2, h3, h4, h5, h6, p, blockquote, pre, abbr, address, cite, code, del, dfn, em, img, ins, kbd, q, samp, small, strong, sub, sup, var, b, i, dl, dt, dd, ol, ul, li, fieldset, form, label, legend, table, caption, tbody, tfoot, thead, tr, th, td, article, aside, canvas, details, figcaption, figure, footer, header, hgroup, menu, nav, section, summary, time, mark, audio, video {background: transparent; border: 0; font-size: 100%; margin: 0; outline: 0; padding: 0; vertical-align: baseline;}
+html {overflow-y: scroll;}
+body {line-height: 1;}
+focus {outline: 1;}
+article, aside, canvas, details, figcaption, figure, footer, header, hgroup, menu, nav, section, summary, video {display: block;}
+blockquote, q {quotes: none;}
+blockquote:before, blockquote:after, q:before, q:after {content: ''; content: none;}
+a, img {border: 0; outline: none;}
+abbr[title], dfn[title] {border-bottom: 1px dotted #000; cursor: help;}
+table {border-collapse: collapse; border-spacing: 0;}
+input, select {vertical-align: middle;}
+
+/* general
+-------------------------------------------------------*/
+html {background: #EEEEEE; color: #080808; font: 16px/1.33 Helvetica, Arial, sans-serif; width: 100%;}
+body {padding: 50px 20px; margin: 0 auto; max-width: 900px;}
+h1, h2, h3 {padding-bottom: 20px;}
+input, select, option {font: 16px/1.33 Helvetica, Arial, sans-serif;}
+a, a:visited {color: #080808; text-decoration: none;}
+
+
+#header {border-bottom: 1px solid #cccccc; padding-bottom: 20px; text-align: center;}
+	#header h1 {font-size: 4.2em; padding-bottom: 0;}
+
+#gamespace {display:inline-block; height: 416px; margin: 2% auto; position: relative;}
+	#garden {background: #CCC;}
+	#garden span, .test {display: block; float: left; height: 32px; width: 32px;}
+		#ground span {background-image: url('../img/plowed_soil.png');}
+
+	#player {background: url('../img/hero.png'); height: 48px; position: absolute; width: 32px;}
+	
+	#test {width: 96px; position: absolute; right: 40px; top:200px;}
+	
+#footer {border-top: 1px solid #cccccc; padding-top: 20px; margin-top: 20px; text-align: center;}
