@@ -18,7 +18,7 @@
 	<footer id="footer">Cup of Tea Creations &copy;2013</footer>
 	<script type="text/javascript" src="js/game.js"></script>
 	<script type="text/javascript" src="js/character.js"></script>
-	<script type="text/javascript" src="js/garden.js"></script>
+	<script type="text/javascript" src="js/area.js"></script>
 	<script type="text/javascript" src="js/plant.js"></script>
 	<script type="text/javascript">
 	/*	var rose = new glob('Rose');
