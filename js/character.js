@@ -84,17 +84,10 @@ var character={
 		this.stats.hp = 100;
 		this.stats.e = 100;
 
-<<<<<<< HEAD
-		var height = area.h - this.sprite.h - 4;
-		var width = area.w - this.sprite.w - 4;
-		//this.location.x = Math.floor(Math.random()*width);
-		//this.location.y = Math.floor(Math.random()*height);
-=======
 		var height = game.viewport.h - this.sprite.h - 4;
 		var width = game.viewport.w - this.sprite.w - 4;
 		this.location.x = Math.floor(Math.random()*width);
 		this.location.y = Math.floor(Math.random()*height);
->>>>>>> Scrolling_Maps
 
 		// create object for canvas, and pass back
 		this.object = document.createElement('div');
@@ -102,7 +95,6 @@ var character={
 		this.object.style.top = this.location.y+'px';
 		this.object.style.left = this.location.x+'px';
 		return this.object;
-
 	},
 	walk:function(d){
 		this.move(d,6);
@@ -119,7 +111,7 @@ var character={
 				this.object.style.top = this.location.y+'px';
 			} else {
 				area.config.update = true;
-				area.config.direction = 'north';
+				area.config.direction = 'up';
 			}
 			break;
 			
@@ -129,7 +121,7 @@ var character={
 				this.object.style.left = this.location.x+'px';
 			} else {
 				area.config.update = true;
-				area.config.direction = 'east';
+				area.config.direction = 'right';
 			}
 			break;
 			
@@ -139,7 +131,7 @@ var character={
 				this.object.style.top = this.location.y+'px';
 			} else {
 				area.config.update = true;
-				area.config.direction = 'south';
+				area.config.direction = 'down';
 			}
 			break;
 			
@@ -149,7 +141,7 @@ var character={
 				this.object.style.left = this.location.x+'px';
 			} else {
 				area.config.update = true;
-				area.config.direction = 'west';
+				area.config.direction = 'left';
 			}
 			break;
 		}

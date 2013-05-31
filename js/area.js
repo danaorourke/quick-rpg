@@ -1,11 +1,15 @@
 var area = {
 	// some nice variables
 	config: {
+		dependancies: ['js/world/maps.json'],
 		update: false,
 		direction: false
 	},
 	offset: {x:0,y:0},
 	tilesize: {h:32,w:32}, // many elements are x2 by x3
+	maps: {
+		
+	},
 	map: {
 		h: 0,
 		w: 0,
@@ -43,6 +47,7 @@ var area = {
 			[2,3,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,2,3],
 			[5,6,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,5,6]
 		]
+
 	},
 	object: '',
 	
@@ -62,46 +67,45 @@ var area = {
 		this.object = document.createElement('div');
 		this.object.id = 'garden';
 		
+		this.getMap('barren');
+		
 		this.getMapSize();
 		this.object.style.width = this.map.h+'px';
 		this.object.style.height = this.map.h+'px';
 
 		this.getTileSetData();
-		if (this.map.hasOwnProperty('ground')) {
-			this.renderLayer('ground');
-		}
-		if (this.map.hasOwnProperty('level')) {}
-		if (this.map.hasOwnProperty('above')) {}
 		
-		// append layer to garden
+		if (this.map.hasOwnProperty('ground')) this.renderLayer('ground');
+		if (this.map.hasOwnProperty('level')) this.renderLayer('level');
+		if (this.map.hasOwnProperty('above')) this.renderLayer('above');
 		
 		// return filled garden div
 		return this.object;
 	},
 	scrollMap: function() {
 		switch (this.config.direction) {
-			case 'north':
+			case 'up':
 			if (this.offset.y < 0) {
 				this.offset.y = this.offset.y + this.tilesize.h;
 				this.object.style.top = this.offset.y+'px';
 			}
 			break;
 			
-			case 'south':
+			case 'down':
 			if (this.offset.y > ((this.map.h-(this.map.h*2))+game.viewport.h)) {
 				this.offset.y = this.offset.y - this.tilesize.h;
 				this.object.style.top = this.offset.y+'px';
 			}
 			break;
 			
-			case 'east':
+			case 'right':
 			if (this.offset.x > ((this.map.w-(this.map.w*2))+game.viewport.w + (this.tilesize.w/2))) {
 				this.offset.x = this.offset.x - this.tilesize.h;
 				this.object.style.left = this.offset.x+'px';
 			}
 			break;
 			
-			case 'west':
+			case 'left':
 				if (this.offset.x < 0) {
 					this.offset.x = this.offset.x + this.tilesize.h;
 					this.object.style.left = this.offset.x+'px';
@@ -125,11 +129,9 @@ var area = {
 				tile.className = i+' '+j;
 				var v = (id%this.map.tileset.rows);
 				if (v == 0) {
-					tile.style.backgroundPositionX = '-'+((this.map.tileset.rows-1)*this.tilesize.w)+'px';
-					tile.style.backgroundPositionY = '-'+((Math.floor(id/this.map.tileset.rows)-1)*this.tilesize.h)+'px';
+					tile.style.backgroundPosition = '-'+((this.map.tileset.rows-1)*this.tilesize.w)+'px -'+((Math.floor(id/this.map.tileset.rows)-1)*this.tilesize.h)+'px';
 				} else {
-					tile.style.backgroundPositionX = '-'+((v-1)*this.tilesize.w)+'px';
-					tile.style.backgroundPositionY = '-'+(Math.floor(id/this.map.tileset.rows)*this.tilesize.h)+'px';
+					tile.style.backgroundPosition = '-'+((v-1)*this.tilesize.w)+'px -'+(Math.floor(id/this.map.tileset.rows)*this.tilesize.h)+'px';
 				}
 				// append tile to layer
 				l.appendChild(tile);
@@ -137,6 +139,9 @@ var area = {
 		}
 		// append layer to garden
 		this.object.appendChild(l);
+	},
+	getMap: function(name) {
+		// get the map inside the maps varibles.
 	},
 	getMapSize: function() {
 		this.map.h = this.map.ground.length * this.tilesize.h;
