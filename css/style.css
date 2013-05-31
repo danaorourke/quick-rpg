@@ -22,7 +22,7 @@ input, select {vertical-align: middle;}
 /* general
 -------------------------------------------------------*/
 html {background: #EEEEEE; color: #080808; font: 16px/1.33 Helvetica, Arial, sans-serif; width: 100%;}
-body {padding: 50px 20px; margin: 0 auto; max-width: 900px;}
+body {padding: 50px 20px; margin: 0 auto; max-width: 960px;}
 h1, h2, h3 {padding-bottom: 20px;}
 input, select, option {font: 16px/1.33 Helvetica, Arial, sans-serif;}
 a, a:visited {color: #080808; text-decoration: none;}
@@ -31,13 +31,32 @@ a, a:visited {color: #080808; text-decoration: none;}
 #header {border-bottom: 1px solid #cccccc; padding-bottom: 20px; text-align: center;}
 	#header h1 {font-size: 4.2em; padding-bottom: 0;}
 
-#gamespace {display:inline-block; height: 416px; margin: 2% auto; position: relative;}
-	#garden {background: #CCC;}
-	#garden span, .test {display: block; float: left; height: 32px; width: 32px;}
-		#ground span {background-image: url('../img/plowed_soil.png');}
+/* expects desktop */
+#gamespace {height: 416px; margin: 2% auto; overflow: hidden; position: relative;}
+	#garden {background: #CCC; position: absolute; top: 0; left: 0;}
+		#ground span {background-image: url('../img/plowed_soil.png'); float: left; height: 32px; width: 32px;}
 
-	#player {background: url('../img/hero.png'); height: 48px; position: absolute; width: 32px;}
+	#player {background: url('../img/hero.png'); height: 48px; position: absolute; width: 32px; z-index: 10;}
 	
 	#test {width: 96px; position: absolute; right: 40px; top:200px;}
 	
 #footer {border-top: 1px solid #cccccc; padding-top: 20px; margin-top: 20px; text-align: center;}
+
+@media (min-width: 200px) and (max-width:479px) {
+	#gamespace(width: 320px;)
+}
+/* landscape phone and down */
+@media (min-width: 480px) and (max-width: 766px) {
+	 #gamespace {width: 480px;}
+}
+/* Landscape phone to portrait tablet */
+@media (min-width: 767px) {
+	#gamespace {width: 736px;}
+}
+/* Portrait tablet to landscape and sm desktop */
+@media (min-width: 768px) and (max-width: 959px){
+	#gamespace {width: 896px;}
+}
+@media (min-width:960px) {
+	#gamespace {width: 960px;}
+}

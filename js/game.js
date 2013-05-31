@@ -4,6 +4,7 @@ var game={
 		paused:false,
 		frameRate:1000/20,
 	},
+	viewport:{h:0,w:0},
 	canvas: '',
 	objects: '',
 	animate:function(){
@@ -11,6 +12,9 @@ var game={
 		for (i in this.objects) this.objects[i].animate();
 	},
 	update:function(){
+		// check for viewport update
+		if (this.canvas.offsetWidth != this.viewport.w || this.canvas.offsetHeight != this.viewport.h) this.getViewPort();
+	
 		// check for collisions	
 		var states = [];
 		for (i in this.objects) states.push(this.objects[i].state);
@@ -22,6 +26,7 @@ var game={
 	},
 	init:function(canvas,objects){
 		this.canvas = document.getElementById(canvas);
+		this.getViewPort();
 		// to do create objects from json file - this may also include all the necessary sub-pages
 		this.objects = objects;
 		for(i in this.objects) {
@@ -32,13 +37,23 @@ var game={
 		}
 		// start loop
 		this.loop();
+	},
+	getViewPort: function() {
+		this.viewport.w = this.canvas.offsetWidth;
+		this.viewport.h = this.canvas.offsetHeight;
 	}
 };
 
 // movement - expand to include distance, too.
+/*
 function move(self,direction,amt) {
+<<<<<<< HEAD
 	var b_h = area.h - self.sprite.h -4;
 	var b_w = area.w - self.sprite.w -4;
+=======
+	var b_h = game.viewport.h - self.sprite.h -4;
+	var b_w = game.viewport.w - self.sprite.w -4;
+>>>>>>> Scrolling_Maps
 
 	switch (direction) {
 		case 'up':
@@ -70,8 +85,10 @@ function move(self,direction,amt) {
 		break;
 	};
 };
+*/
 // this needs overhauling. the code is inelegant.
 function animator(self,action,direction) {
+
 	switch (self.sprite.animation.frame) {
 		case 0:
 		self.object.style.backgroundPosition = '-'+self.sprite.animations[action][direction]['f_0']['x']+'px -'+self.sprite.animations[action][direction]['f_0']['y']+'px';
