@@ -28,11 +28,8 @@ var area = {
 		
 		this.getMap('garden');
 		
-		this.getMapSize();
 		this.object.style.width = this.map.h+'px';
 		this.object.style.height = this.map.h+'px';
-
-		this.getTileSetData();
 		
 		if (this.map.hasOwnProperty('ground')) this.renderLayer('ground');
 		if (this.map.hasOwnProperty('level')) this.renderLayer('level');
@@ -100,16 +97,16 @@ var area = {
 		this.object.appendChild(l);
 	},
 	getMap: function(name) {
-		this.map = this.maps[name];
 		this.tilesize.h = this.maps.tilesize.h;
 		this.tilesize.w = this.maps.tilesize.w;
-	},
-	getMapSize: function() {
+	
+		this.map = this.maps[name];
+		// map dimensions
 		this.map.h = this.map.ground.length * this.tilesize.h;
 		this.map.w = this.map.ground[0].length * this.tilesize.w;
-	},
-	getTileSetData: function() {
+		// tileset data
 		this.map.tileset.rows = this.map.tileset.w / this.tilesize.w;
 		this.map.tileset.cols = this.map.tileset.h / this.tilesize.h;
-	}
+
+	},
 };
