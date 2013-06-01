@@ -1,6 +1,6 @@
 var game={
 	config:{
-		started: Date.now(),
+		started:'',
 		paused:false,
 		frameRate:1000/20,
 	},
@@ -25,10 +25,15 @@ var game={
 		setInterval(function() {self.update();self.animate();}, this.config.frameRate);
 	},
 	init:function(canvas,objects){
+		this.config.started = Date.now();
+	
 		this.canvas = document.getElementById(canvas);
 		this.getViewPort();
-		// to do create objects from json file - this may also include all the necessary sub-pages
+
 		this.objects = objects;
+		// to do create objects from json file - this may also include all the necessary sub-pages
+		this.getDependancies();
+		
 		for(i in this.objects) {
 			var o = this.objects[i].init();
 			if (o != false) {
@@ -37,6 +42,26 @@ var game={
 		}
 		// start loop
 		this.loop();
+	},
+	getDependancies: function() {
+		for(i=0; i < this.objects.length;i++) {
+			var o = this.objects[i];
+			if (o.hasOwnProperty('config') && o.config.hasOwnProperty('dependancies')) {
+				var dep = o.config.dependancies;
+				$.ajax({
+					url: dep['src'],
+					dataType: 'json',
+					async: false,
+					success: function(data) {
+						o[dep['name']] = data.maps;
+					}
+				});
+			}
+		}
+	},
+	assignDep: function(data,o) { // data and object
+		console.log(data);
+		console.log(o);	
 	},
 	getViewPort: function() {
 		this.viewport.w = this.canvas.offsetWidth;
