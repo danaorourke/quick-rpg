@@ -1,14 +1,12 @@
 var player = {
-	stats: {},
-	inventory: {},
-	
 	state: {
 		up: false,
 		down: false,
 		right: false,
 		left: false
 	},
-	location: {x:null,y:null},
+	stats:{hp:0,e:0},
+	object: null,
 	sprite:{
 		h:48,
 		w:32,
@@ -42,11 +40,24 @@ var player = {
 			frame: 0
 		}
 	},
-	object: null,
+	location: {x:0,y:0},
+	inventory: {},
 	
-	// methods
-	init: function(){},
-	update: function(){
+	// engine requisit functions	
+	init: function() {
+		this.stats.hp = 100;
+		this.stats.e = 100;
+		
+		this.location.x = 10;
+		this.location.y = 10;
+		
+		var o = {wrap: 'div', id: 'player'};
+		this.object = game.makeNode(o);
+		this.object.style.top = this.location.y+'px';
+		this.object.style.left = this.location.x+'px';
+		game.appendToCanvas(this.object);
+	},
+	update: function() {
 		document.onkeydown = function(e) {
 			var key;
 			if (document.all)	{e = window.event;}
@@ -54,11 +65,11 @@ var player = {
 			if (document.all)	{key = e.keyCode;}
 //			alert(' [Decimal value = ' + key + ']');
 			
-			if (key == 87 || key == 38) {character.state.up = true;}
-			else if (key == 83|| key == 40) {character.state.down = true;}
+			if (key == 87 || key == 38) {player.state.up = true;}
+			else if (key == 83|| key == 40) {player.state.down = true;}
 
-			if (key == 68 || key == 39) {character.state.right = true;}
-			else if (key == 65 || key == 37) {character.state.left = true;}
+			if (key == 68 || key == 39) {player.state.right = true;}
+			else if (key == 65 || key == 37) {player.state.left = true;}
 			
 		};
 		document.onkeyup = function(e) {
@@ -67,13 +78,68 @@ var player = {
 			if (document.layers || e.which) {key = e.which;}
 			if (document.all) {key = e.keyCode;}
 			
-			if (key == 87 || key == 38) {character.state.up = false;}
-			else if (key == 83 || key == 40) {character.state.down = false;}
+			if (key == 87 || key == 38) {player.state.up = false;}
+			else if (key == 83 || key == 40) {player.state.down = false;}
 
-			if (key == 68 || key == 39) {character.state.right = false;}
-			else if (key == 65 || key == 37) {character.state.left = false;}
-
+			if (key == 68 || key == 39) {player.state.right = false;}
+			else if (key == 65 || key == 37) {player.state.left = false;}
+			
+			// the animation frame and positions need to be reset to neutral.
 		};
+/*
+		var keyDown = game.getKeyCode('down');
+		console.log('keyDown: '+keyDown);
+		if (keyDown == 87 || keyDown == 38) {this.state.up = true;}
+		else if (keyDown == 83|| keyDown == 40) {this.state.down = true;}
+		if (keyDown == 68 || keyDown == 39) {this.state.right = true;}
+		else if (keyDown == 65 || keyDown == 37) {this.state.left = true;}
+	
+		var keyUp = game.getKeyCode('up');
+		console.log('keyUp: '+keyUp);
+		if (keyUp == 87 || keyUp == 38) {this.state.up = false;}
+		else if (keyUp == 83 || keyUp == 40) {this.state.down = false;}
+		if (keyUp == 68 || keyUp == 39) {this.state.right = false;}
+		else if (keyUp == 65 || keyUp == 37) {this.state.left = false;}*/
 	},
-	animate: function(){}
+	animate: function() {
+		if (this.state.up) this.walk('up');
+		if (this.state.down) this.walk('down');
+		if (this.state.right) this.walk('right');
+		if (this.state.left) this.walk('left');
+	},
+	// player specific
+	walk: function(d) {
+		this.move(d,6);
+		game.animator(this,'walk',d);	
+	},
+	move: function(d,amt) {
+		var bound_h = game.canvas.viewport.h - this.sprite.h - (map.maps.tilesize.h/2);
+		var bound_w = game.canvas.viewport.w - this.sprite.w - (map.maps.tilesize.w/2);
+		switch(d) {
+			case 'up':
+				if (this.location.y >= ((this.sprite.h/2) - map.maps.tilesize.h)) {
+					this.location.y = this.location.y - amt;
+					this.object.style.top = this.location.y+'px';
+				} else { map.queueScroll(d); }
+			break;
+			case 'right':
+				if (this.location.x < bound_w) {
+					this.location.x = this.location.x + amt;
+					this.object.style.left = this.location.x+'px';
+				} else { map.queueScroll(d); }
+			break;
+			case 'down':
+				if (this.location.y < bound_h) {
+					this.location.y = this.location.y + amt;
+					this.object.style.top = this.location.y+'px';
+				} else { map.queueScroll(d); }
+			break;
+			case 'left':
+				if (this.location.x >= (this.sprite.w - (map.maps.tilesize.w/2))) {
+					this.location.x = this.location.x - amt;
+					this.object.style.left = this.location.x+'px';
+				} else { map.queueScroll(d); }
+			break;
+		}
+	}
 };

@@ -19,7 +19,7 @@ var play = {
 		this.player.animate();
 	},
 	update: function(){
-		this.map.animate();
-		this.player.animate();
+		this.map.update();
+		this.player.update();
 	}
 };

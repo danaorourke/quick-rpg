@@ -4,10 +4,9 @@ var game = {
 		frameRate: 1000/20
 	},
 	canvas: {
-		object: '',
+		object: null,
 		viewport: {h:null,w:null},
 	},
-	objects: [],
 	queue: null, // extend idea to create a framework that only creates here in 'game'.
 	state: 'play',
 	states: {
@@ -21,8 +20,10 @@ var game = {
 		this.canvas.object = document.getElementById(canvas);
 		this.solidifyStates();
 		this.getDependancies();
+		this.getViewport();
 		
 		this.states[this.state].init();
+		this.loop();
 	},	
 	// loop through animations
 	animate: function(){
@@ -40,8 +41,6 @@ var game = {
 		var self = this;
 		setInterval(function() {self.update();self.animate();}, this.config.frameRate);
 	},
-	// get asked for resource
-	loadResource: function() {},
 	// pass data to create the DOM object for class
 	makeNode: function(t){
 		//	var o = {wrap: null, id: null, className: null, content: null};
@@ -52,6 +51,31 @@ var game = {
 			if (t.hasOwnProperty('content') && (t.content != null && t.content != '')) o.innerHTML = t.content;
 			return o;
 		}
+	},
+	appendToCanvas: function(o) {
+		game.canvas.object.appendChild(o);
+	},
+	animator: function(that,a,d) {
+		var lastFrame = that.sprite.animation.frame;
+		var bgPos = that.object.style.backgroundPosition;
+		var frames = that.sprite.animations[a][d];
+		if (lastFrame <= 2) {
+			bgPos = '-'+frames['f_'+lastFrame]['x']+'px -'+frames['f_'+lastFrame]['y']+'px';
+			lastFrame++;
+		} else if (lastFrame == 3) {
+			bgPos = '-'+frames['f_2']['x']+'px -'+frames['f_2']['y']+'px';
+			lastFrame++;
+		} else if (lastFrame == 4) {
+			bgPos = '-'+frames['f_1']['x']+'px -'+frames['f_1']['y']+'px';
+			lastFrame++;
+		} else if (lastFrame == 5) {
+			bgPos = '-'+frames['f_0']['x']+'px -'+frames['f_0']['y']+'px';
+			lastFrame = 0;
+		}
+		that.sprite.animation.frame = lastFrame;
+//		console.log(that.sprite.animation.frame);
+		that.object.style.backgroundPosition = bgPos;
+//		console.log(that.object.style.backgroundPosition);
 	},
 	// loop through objects for current state and get dependancies
 	solidifyStates: function() {
@@ -76,11 +100,10 @@ var game = {
 				var dep = o['config']['dependancies'];
 				for (j=0;j<dep.length;j++) {
 					var name = dep[j]['name'];
-					var c = o[name];
 					$.ajaxSetup({async:false});
-					$.getScript(dep[j]['src'],function(data) {
-						game['states'][s][name] = c = eval(name);
-					});
+					$.getScript(dep[j]['src'],function(data) {game['states'][s][name] = eval(name);});
+					var c = o[name];
+//					console.log(name); console.log(o[name]);
 					if (c.hasOwnProperty('config') && c['config'].hasOwnProperty('dependancies')) {
 						var dep2 = c['config']['dependancies'];
 						for (k=0;k<dep2.length;k++) {
@@ -90,8 +113,8 @@ var game = {
 					}
 					$.ajaxSetup({async:true});
 				} // end depth.length for
-			} // end o check
-		} // end for state.length
+			}
+		} 
 	},
 	getStates: function() {
 		var count = 0;
@@ -107,5 +130,17 @@ var game = {
 	getViewport: function() {
 		this.canvas.viewport.w = this.canvas.object.offsetWidth;
 		this.canvas.viewport.h = this.canvas.object.offsetHeight;
+	},
+	getKeyCode: function(dir) {
+		if (dir == 'down') {
+			document.onkeyDown = function(e) {
+				var key;
+				if (document.all) e = window.event;
+				if (document.layers || e.which) key = e.which;
+				if (document.all) key = e.whichKeycode;
+				console.log(key);
+				return key;
+			}
+		}
 	}
 };
