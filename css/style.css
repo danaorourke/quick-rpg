@@ -42,12 +42,18 @@ a, a:visited {color: #080808; text-decoration: none;}
 	
 #footer {border-top: 1px solid #cccccc; padding-top: 20px; margin-top: 20px; text-align: center;}
 
+	/* start */
+	/* pause */
+	/* play */
+	/* inventory */
+	/* journal */
+	/* map */
+
 @media (min-width: 200px) and (max-width:479px) {
 	#gamespace(width: 320px;)
 }
 /* landscape phone and down */
 @media (min-width: 480px) and (max-width: 766px) {
-	 #gamespace {width: 480px;}
 }
 /* Landscape phone to portrait tablet */
 @media (min-width: 767px) {
