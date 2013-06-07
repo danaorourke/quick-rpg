@@ -15,7 +15,6 @@
 	
 <body lang="en">
 	<header id="header"><h1>Because Garden</h1></header>
-	<section id="test"></section>
 	<section id="gamespace"></section>
 	<section id="test"></section>
 	<footer id="footer">Cup of Tea Creations &copy;2013</footer>
