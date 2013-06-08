@@ -1,0 +1,152 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+	<meta name="HandheldFriendly" content="true">
+    <title>Because Garden: Map Test</title>
+    <!--[if lt IE 9]>
+    <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js" ></script>
+    <link rel="stylesheet" media="all" href="/css/style.css">
+    <style type="text/css">
+    	#gamespace {overflow: visible; height: auto;}
+    	/* I am currently targeted at webkit browsers. Extend support to other fulls service browsers*/
+		form {position: relative; height: 100%; width: 100%;}
+		    #scroll {height: 416px; position: relative; width: 100%;}
+			#scroll input {position: absolute;}
+				#horizontal {height: 32px; left: 80px; width: 864px;}
+				#vertical {height: 320px; top: 80px; width: 32px; -webkit-transform: rotate(-180deg); -webkit-appearance: slider-vertical;}
+		    	
+		    #map_space {height: 360px; left: 40px; overflow: hidden; position: absolute; top: 40px; width: 904px;}
+			    #key_vert, #key_horz {overflow: hidden; position: absolute;}
+				#key_vert {height: 320px; top: 40px; width: 32px;}
+				#key_horz {height: 32px; left: 40px; width: 864px;}
+					#horz, #vert {position: absolute;}
+						#horz span {float: left;}
+						#horz span, #vert span {color: #999999; display: block; height: 32px; line-height: 32px; text-align: center; width: 32px;}
+				#viewport {background: #cccccc; height: 320px; left: 40px; overflow: hidden; position: relative; top: 40px; width: 864px;}
+				#viewport .selected {border: 1px dashed #cccccc; width: 30px; height: 30px;}
+
+			#view {display: none;}
+/*		    #view {display: block; margin: 20px 100px;}
+		    	#view fieldset {float: left; width: 32%;}
+		    	#view h2 {padding-bottom: 10px;}
+		    	#view ul {list-style: none; margin-left: 20px;} */
+    </style>
+</head>
+	
+<body lang="en">
+	<header id="header"><h1>Map Test</h1></header>
+	<section id="gamespace">
+		<form>
+			<fieldset id="scroll">
+				<!-- horizontal -->
+				<input name="horizontal" id="horizontal" type="range" min="27" list="horz_list" value="27">
+				<datalist name="horz_list"></datalist>
+				
+				<!-- vertical -->
+				<input name="vertical" id="vertical" type="range" min="10" max="" list="vert_list" value="10">
+				<datalist name="vert_list"></datalist>
+				
+				<!-- map and user key -->
+				<section id="map_space">
+					<div id="key_vert"><div id="vert"></div></div>
+					<div id="key_horz"><div id="horz"></div></div>
+					<div id="viewport"></div>
+				</section>
+			</fieldset>
+
+			<!-- hide, show controls -->			
+			<fieldset id="view">
+				<!-- for coloring layers -->
+				<fieldset id="colors">
+					<h2>
+						<input type="checkbox" id="color_all" name="color_all">
+						<label for="color_all">Color Layers</label>
+					</h2>
+					<ul>
+						<li>
+							<input type="checkbox" id="color_below" name="color_below">
+							<label for="color_below">Below</label>
+						</li>
+						<li>
+							<input type="checkbox" id="color_level" name="color_level">
+							<label for="color_level">Level</label>
+						</li>
+						<li>
+							<input type="checkbox" id="color_above" name="color_above">
+							<label for="color_above">Above</label>
+						</li>
+						<li>
+							<input type="checkbox" id="color_events" name="color_events">
+							<label for="color_events">Events</label>
+						</li>
+					</ul>
+				</fieldset>
+				<!-- for toggling visibility of layers -->
+				<fieldset id="layers">
+					<h2>
+						<input type="checkbox" id="layer_all" name="layer_all">
+						<label for="layer_all">Show Layers</label>
+					</h2>
+					<ul>
+						<li>
+							<input type="checkbox" id="layer_below" name="layer_below">
+							<label for="layer_below">Below</label>
+						</li>
+						<li>
+							<input type="checkbox" id="layer_level" name="layer_level">
+							<label for="layer_level">Level</label>
+						</li>
+						<li>
+							<input type="checkbox" id="layer_above" name="layer_above">
+							<label for="layer_above">Above</label>
+						</li>
+						<li>
+							<input type="checkbox" id="layer_events" name="layer_events">
+							<label for="layer_events">Events</label>
+						</li>
+					</ul>
+				</fieldset>
+				<!-- for toggling visibility of events -->
+				<!-- disabled because accompanying NPC code is not finished.
+				<fieldset id="events">
+					<h2>
+						<input type="checkbox" id="event_all" name="event_all">
+						<label for="event_all">Show Events</label>
+					</h2>
+					<ul>
+						<li>
+							<input type="checkbox" id="event_friendly" name="event_friendly">
+							<label for="event_friendly">Friendlies</label>
+						</li>
+						<li>
+							<input type="checkbox" id="event_item" name="event_item">
+							<label for="event_item">Items</label>
+						</li>
+						<li>
+							<input type="checkbox" id="event_enemy" name="event_enemy">
+							<label for="event_enemy">Enemies</label>
+						</li>
+						<li>
+							<input type="checkbox" id="event_animal" name="event_animal">
+							<label for="event_animal">Animals</label>
+						</li>
+					</ul>
+				</fieldset>-->
+			</fieldset>
+		</form>
+	</section>
+	<footer id="footer">Cup of Tea Creations &copy;2013</footer>
+	<script type="text/javascript" src="/js/objects/map.js"></script>
+	<script type="text/javascript" src="js/map.js"></script>
+	<script type="text/javascript">
+		$(document).ready(function(){
+			game.init('garden');
+		});
+	</script>
+</body>
+</html>

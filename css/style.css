@@ -33,7 +33,7 @@ a, a:visited {color: #080808; text-decoration: none;}
 
 /* expects desktop */
 #gamespace {height: 416px; margin: 2% auto; overflow: hidden; position: relative;}
-	#garden {background: #2f8136; position: absolute; top: 0; left: 0;}
+	#map {background: #2f8136; position: absolute; top: 0; left: 0;}
 		#ground span {background-image: url('../img/plowed_soil.png'); float: left; height: 32px; width: 32px;}
 
 	#player {background: url('../img/hero.png'); height: 48px; position: absolute; width: 32px; z-index: 10;}

@@ -12,13 +12,14 @@ var map = {
 	map: 'barren',
 	
 	// run things
-	init: function(){
-		var o = {wrap: 'div', id: 'garden'};
+	init: function(map){
+		var o = {wrap: 'div', id: 'map'};
+		this.map = map;
 		this.object = game.makeNode(o);
 		this.object.style.width = this.maps[this.map]['w']+'px';
 		this.object.style.height = this.maps[this.map]['w']+'px';
 		
-		this.getMap('barren');
+		this.getMap();
 		
 		if (this.maps[this.map].hasOwnProperty('ground')) this.renderLayer('ground');
 		if (this.maps[this.map].hasOwnProperty('level')) this.renderLayer('level');
@@ -75,8 +76,7 @@ var map = {
 		// kill update queue
 		this.config.update = false;
 	},
-	getMap: function(name) {
-		this.map = name;
+	getMap: function() {
 		this.maps[this.map]['h'] = this.maps[this.map].ground.length * this.maps.tilesize.h;
 		this.maps[this.map]['w'] = this.maps[this.map].ground[0].length * this.maps.tilesize.w;
 		this.maps[this.map]['tileset']['rows'] = this.maps[this.map]['tileset']['w'] / this.maps.tilesize.w;
@@ -92,7 +92,7 @@ var map = {
 		for (i=0;i<this.maps[this.map][name].length;i++) {
 			// get tiles in row
 			for (j=0;j<this.maps[this.map][name][i].length;j++) {
-				var tile = {wrap:'span',className:'c_'+i+' c_'+j};
+				var tile = {wrap:'span',className:'r_'+(i+1)+' c_'+(j+1)};
 				tile = game.makeNode(tile);
 				var id = this.maps[this.map][name][i][j];
 				var v = (id%this.maps[this.map]['tileset']['rows']);

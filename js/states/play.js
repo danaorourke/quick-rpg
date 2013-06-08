@@ -11,7 +11,7 @@ var play = {
 	
 	// necessary
 	init: function(){
-		this.map.init();
+		this.map.init('barren');
 		this.player.init();
 	},
 	animate: function(){
