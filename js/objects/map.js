@@ -27,7 +27,9 @@ var map = {
 		
 		this.canvas.object = game.makeNode({wrap:'div',id:'map'});
 		
-		this.renderLayer('ground');
+		if (this.maps[this.map].hasOwnProperty('ground')) this.renderLayer('ground');
+		if (this.maps[this.map].hasOwnProperty('level')) this.renderLayer('level');
+		if (this.maps[this.map].hasOwnProperty('above')) this.renderLayer('above');
 		
 		game.appendToCanvas(this.canvas.object);
 	},
@@ -92,7 +94,7 @@ var map = {
 		this.style = document.createElement('style');
 		this.style.type = 'text/css';
 
-		style = "#map {overflow: auto; height: "+this.maps[this.map].h+"px; width: "+this.maps[this.map].w+"px;}";
+		style = "#map {overflow: auto; height: "+this.maps[this.map].h+"px; width: "+this.maps[this.map].w+"px;}\n";
 		style += "#map div {display: block; height: "+this.maps[this.map].h+"px; left: 0; position: absolute; top: 0; width: "+this.maps[this.map].w+"px;}\n";
 		style += "	#map span {background-image: url('/"+this.maps[this.map].tileset.src+"'); display: block; float: left; height: "+this.maps.tilesize.h+"px; width: "+this.maps.tilesize.w+"px;}\n";
 		style += "	#map .blank {background-image: none;}\n";
