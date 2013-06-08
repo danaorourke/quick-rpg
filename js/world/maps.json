@@ -5,6 +5,7 @@
 		},
 		"barren": {
 			"tileset": {
+				"name": "pwsoil",
 				"src": "img/plowed_soil.png",
 				"h": 192,
 				"w": 96

@@ -2,108 +2,135 @@ var map = {
 	config: {
 		dependancies: [
 			{name: 'maps', src: 'js/world/maps.json'}
-		],
-		update: false
+		]
 	},
-	direction: {up: false, down:false, right: false, left: false},
+	update: {
+		flag: false,
+		direction: {up: false, down:false, right: false, left: false}	
+	},
 	offset: {x:0,y:0},
-	object: null,
+	canvas: {
+		object: null,
+		style: null
+	},
+	// dataset, all maps - from json
 	maps: null,
+	// current map to get, defaults to barren
 	map: 'barren',
 	
-	// run things
-	init: function(map){
-		var o = {wrap: 'div', id: 'map'};
-		this.map = map;
-		this.object = game.makeNode(o);
-		this.object.style.width = this.maps[this.map]['w']+'px';
-		this.object.style.height = this.maps[this.map]['w']+'px';
+	// framework requisite
+	init: function(name) {
+		// check for existing element and remove it?
+		this.map = name;
+		this.getMapDetails();
+		this.renderStyles();
 		
-		this.getMap();
+		this.canvas.object = game.makeNode({wrap:'div',id:'map'});
 		
-		if (this.maps[this.map].hasOwnProperty('ground')) this.renderLayer('ground');
-		if (this.maps[this.map].hasOwnProperty('level')) this.renderLayer('level');
-		if (this.maps[this.map].hasOwnProperty('above')) this.renderLayer('above');
-
-		game.appendToCanvas(this.object);
+		this.renderLayer('ground');
+		
+		game.appendToCanvas(this.canvas.object);
 	},
-	animate: function(){},
-	update: function(){
-		console.log(this.direction);
-		if (this.config.update == true) this.scrollMap();
+	animate: function() {},
+	update: function() {
+		if (this.update.flag) this.scrollMap();
 	},
-	// special functions for the map
+	
+	// for updating and scrolling map
 	queueScroll: function(d) {
-		if (d == 'up') {this.direction.up = true;}
-		else if (d == 'down') {this.direction.down = true;}
-		else if (d == 'right') {this.direction.right = true;}
-		else if (d == 'left') {this.direction.left = true;}
-		this.config.update = true;
+		if (d == 'up') this.update.direction.up = true;
+		else if (d == 'down') this.update.direction.down = true;
+		else if (d == 'right') this.update.direction.right = true;
+		else if (d == 'left') this.update.direction.left = true;
+		this.update.flag = true;
 	},
 	scrollMap: function() {
 		// check up and resolve
-		if (this.direction.up) {
-			if (this.offset.y < 0) {
-				this.offset.y = this.offset.y + this.maps.tilesize.h;
+		if (this.update.direction.up) {
+			if (this.canvas.offset.y < 0) {
+				this.offset.y += this.maps.tilesize.h;
 				this.object.style.top = this.offset.y+'px';
 			}
-			this.direction.up = false;
+			this.update.direction.up = false;
 		}
 		// check down and resolve
-		if (this.direction.down) {
+		if (this.update.direction.down) {
 			if (this.offset.y > ((this.maps[this.map]['h']-(this.maps[this.map]['h']*2))+game.canvas.viewport.h)) {
-				this.offset.y = this.offset.y - this.maps.tilesize.h;
+				this.offset.y -= this.maps.tilesize.h;
 				this.object.style.top = this.offset.y+'px';
 			}
-			this.direction.down = false;
+			this.update.direction.down = false;
 		}
 		// check right and resolve
-		if (this.direction.right) {
+		if (this.update.direction.right) {
 			if (this.offset.x > ((this.maps[this.map]['w']-(this.maps[this.map]['w']*2))+game.canvas.viewport.w + (this.maps.tilesize.w/2))) {
-				this.offset.x = this.offset.x - this.maps.tilesize.h;
+				this.offset.x -= - this.maps.tilesize.h;
 				this.object.style.left = this.offset.x+'px';
 			}
-			this.direction.right = false;		
+			this.update.direction.right = false;		
 		}
 		// check left and resolve
-		if (this.direction.left) {
+		if (this.update.direction.left) {
 			if (this.offset.x < 0) {
-				this.offset.x = this.offset.x + this.maps.tilesize.h;
+				this.offset.x += this.maps.tilesize.h;
 				this.object.style.left = this.offset.x+'px';
 			}
-			this.direction.left = false;
+			this.update.direction.left = false;
 		}
 		// kill update queue
-		this.config.update = false;
+		this.update.flag = false;
 	},
-	getMap: function() {
-		this.maps[this.map]['h'] = this.maps[this.map].ground.length * this.maps.tilesize.h;
-		this.maps[this.map]['w'] = this.maps[this.map].ground[0].length * this.maps.tilesize.w;
-		this.maps[this.map]['tileset']['rows'] = this.maps[this.map]['tileset']['w'] / this.maps.tilesize.w;
-		this.maps[this.map]['tileset']['cols'] = this.maps[this.map]['tileset']['h'] / this.maps.tilesize.h;
+	
+	// for loading and rendering maps
+	getMapDetails: function() {
+		this.maps[this.map].h = this.maps[this.map].ground.length * this.maps.tilesize.h;
+		this.maps[this.map].w = this.maps[this.map].ground[0].length * this.maps.tilesize.w;
+		this.maps[this.map].tileset.rows = this.maps[this.map].tileset.w / this.maps.tilesize.w;
+		this.maps[this.map].tileset.cols = this.maps[this.map].tileset.h / this.maps.tilesize.h;
+	},
+	renderStyles: function() {
+		this.style = document.createElement('style');
+		this.style.type = 'text/css';
+
+		style = "#map {overflow: auto; height: "+this.maps[this.map].h+"px; width: "+this.maps[this.map].w+"px;}";
+		style += "#map div {display: block; height: "+this.maps[this.map].h+"px; left: 0; position: absolute; top: 0; width: "+this.maps[this.map].w+"px;}\n";
+		style += "	#map span {background-image: url('/"+this.maps[this.map].tileset.src+"'); display: block; float: left; height: "+this.maps.tilesize.h+"px; width: "+this.maps.tilesize.w+"px;}\n";
+		style += "	#map .blank {background-image: none;}\n";
+
+		// each tileid
+		var tileset = this.maps[this.map].tileset;
+		var max = tileset.cols * tileset.rows;
+		for (i=1;i<=max;i++) {
+			style += '	#map .t_'+i+' {background-position: ';
+			var r = (i%tileset.rows);
+			if (r == 0) {
+				style += '-'+((tileset.rows-1)*this.maps.tilesize.w)+'px -'+((Math.floor(i/tileset.rows-1)*this.maps.tilesize.h))+'px';
+			} else {
+				style += '-'+((r-1)*this.maps.tilesize.w)+'px -'+(Math.floor(i/tileset.rows)*this.maps.tilesize.h)+'px';
+			}
+			style += ";}\n";
+		}
+		this.style.innerHTML = style;
+		game.appendToHead(this.style);
 	},
 	renderLayer: function(name) {
-		var layer = {wrap:'div',id:name};
-		layer = game.makeNode(layer);
-		layer.style.height = this.maps[this.map]['h']+'px';
-		layer.style.width = this.maps[this.map]['w']+'px';
-		
+		var layer = game.makeNode({wrap:'div',id:name});
+	//	console.log(layer);
+		var l = this.maps[this.map][name];
 		// for each row
-		for (i=0;i<this.maps[this.map][name].length;i++) {
-			// get tiles in row
-			for (j=0;j<this.maps[this.map][name][i].length;j++) {
-				var tile = {wrap:'span',className:'r_'+(i+1)+' c_'+(j+1)};
-				tile = game.makeNode(tile);
-				var id = this.maps[this.map][name][i][j];
-				var v = (id%this.maps[this.map]['tileset']['rows']);
-				if (v == 0) {
-					tile.style.backgroundPosition = '-'+((this.maps[this.map]['tileset']['rows']-1)*this.maps.tilesize.w)+'px -'+((Math.floor(id/this.maps[this.map]['tileset']['rows'])-1)*this.maps.tilesize.h)+'px';
+		for (i=0;i<l.length;i++) {
+			// for each tile
+			for (j=0;j<l[i].length;j++) {
+				var tile;
+				if (l[i][j] == 0) {
+					tile = {wrap:'span',className:'blank'};
 				} else {
-					tile.style.backgroundPosition = '-'+((v-1)*this.maps.tilesize.w)+'px -'+(Math.floor(id/this.maps[this.map]['tileset']['rows'])*this.maps.tilesize.h)+'px';
+					tile = {wrap:'span',className:'t_'+l[i][j]};
 				}
+				tile = game.makeNode(tile);
 				layer.appendChild(tile);
 			}
 		}
-		this.object.appendChild(layer);
+		this.canvas.object.appendChild(layer);
 	}
 };

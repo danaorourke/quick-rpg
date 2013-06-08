@@ -13,7 +13,8 @@ var game = {
 			horz_list: null,
 			vert_list: null,
 			mouse: null
-		}
+		},
+		head: null
 	},
 	controlls: {
 		scroll: {
@@ -41,6 +42,7 @@ var game = {
 	init: function(name) {
 		this.name = name;
 		this.canvas.object = document.getElementById('viewport');
+		this.canvas.head = document.getElementsByTagName('head')[0];
 
 		this.getMaps();
 		this.map.init(this.name);
@@ -150,6 +152,9 @@ var game = {
 	appendToCanvas: function(o) {
 		// expects only map. Yeah, I hard coded it.
 		game.canvas.object.appendChild(o);
+	},
+	appendToHead: function(o) {
+		game.canvas.head.appendChild(o);
 	},
 	// the below are copied from game. do this cleaner next test, will ya?
 	makeNode: function(t){
