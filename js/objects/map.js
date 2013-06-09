@@ -67,7 +67,7 @@ var map = {
 		// check right and resolve
 		if (this.events.direction.right) {
 			if (this.offset.x > ((this.maps[this.map]['w']-(this.maps[this.map]['w']*2))+game.canvas.viewport.w + (this.tilesets.tile.w/2))) {
-				this.offset.x -= - this.tilesets.tile.h;
+				this.offset.x -= this.tilesets.tile.h;
 				this.canvas.object.style.left = this.offset.x+'px';
 			}
 			this.events.direction.right = false;		
