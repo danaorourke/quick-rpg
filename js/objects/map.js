@@ -4,7 +4,7 @@ var map = {
 			{src: 'js/world/maps.json', name: ["maps","tilesets"]}
 		]
 	},
-	update: {
+	events: {
 		flag: false,
 		direction: {up: false, down:false, right: false, left: false}	
 	},
@@ -36,52 +36,52 @@ var map = {
 	},
 	animate: function() {},
 	update: function() {
-		if (this.update.flag) this.scrollMap();
+		if (this.events.flag) this.scrollMap();
 	},
 	
 	// for updating and scrolling map
 	queueScroll: function(d) {
-		if (d == 'up') this.update.direction.up = true;
-		else if (d == 'down') this.update.direction.down = true;
-		else if (d == 'right') this.update.direction.right = true;
-		else if (d == 'left') this.update.direction.left = true;
-		this.update.flag = true;
+		if (d == 'up') this.events.direction.up = true;
+		else if (d == 'down') this.events.direction.down = true;
+		else if (d == 'right') this.events.direction.right = true;
+		else if (d == 'left') this.events.direction.left = true;
+		this.events.flag = true;
 	},
 	scrollMap: function() {
 		// check up and resolve
-		if (this.update.direction.up) {
+		if (this.events.direction.up) {
 			if (this.canvas.offset.y < 0) {
 				this.offset.y += this.tile.h;
-				this.object.style.top = this.offset.y+'px';
+				this.canvas.object.style.top = this.offset.y+'px';
 			}
-			this.update.direction.up = false;
+			this.events.direction.up = false;
 		}
 		// check down and resolve
-		if (this.update.direction.down) {
+		if (this.events.direction.down) {
 			if (this.offset.y > ((this.maps[this.map]['h']-(this.maps[this.map]['h']*2))+game.canvas.viewport.h)) {
 				this.offset.y -= this.tilesets.tile.h;
-				this.object.style.top = this.offset.y+'px';
+				this.canvas.object.style.top = this.offset.y+'px';
 			}
-			this.update.direction.down = false;
+			this.events.direction.down = false;
 		}
 		// check right and resolve
-		if (this.update.direction.right) {
+		if (this.events.direction.right) {
 			if (this.offset.x > ((this.maps[this.map]['w']-(this.maps[this.map]['w']*2))+game.canvas.viewport.w + (this.tilesets.tile.w/2))) {
 				this.offset.x -= - this.tilesets.tile.h;
-				this.object.style.left = this.offset.x+'px';
+				this.canvas.object.style.left = this.offset.x+'px';
 			}
-			this.update.direction.right = false;		
+			this.events.direction.right = false;		
 		}
 		// check left and resolve
-		if (this.update.direction.left) {
+		if (this.events.direction.left) {
 			if (this.offset.x < 0) {
 				this.offset.x += this.tilesets.tile.h;
-				this.object.style.left = this.offset.x+'px';
+				this.canvas.object.style.left = this.offset.x+'px';
 			}
-			this.update.direction.left = false;
+			this.events.direction.left = false;
 		}
 		// kill update queue
-		this.update.flag = false;
+		this.events.flag = false;
 	},
 	// given to player
 	getMapAttributes: function(){
