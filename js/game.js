@@ -4,6 +4,7 @@ var game = {
 		frameRate: 1000/20
 	},
 	canvas: {
+		head: null,
 		object: null,
 		viewport: {h:null,w:null},
 	},
@@ -18,6 +19,7 @@ var game = {
 	init:function(canvas){
 		// get initial dependancies, start up game.
 		this.canvas.object = document.getElementById(canvas);
+		this.canvas.head = document.getElementsByTagName('head')[0];
 		this.solidifyStates();
 		this.getDependancies();
 		this.getViewport();
@@ -52,6 +54,9 @@ var game = {
 			return o;
 		}
 	},
+	appendToHead: function(o) {
+		game.canvas.head.appendChild(o);	
+	},
 	appendToCanvas: function(o) {
 		game.canvas.object.appendChild(o);
 	},
@@ -72,10 +77,9 @@ var game = {
 			bgPos = '-'+frames['f_0']['x']+'px -'+frames['f_0']['y']+'px';
 			lastFrame = 0;
 		}
+		// reassign values
 		that.sprite.animation.frame = lastFrame;
-//		console.log(that.sprite.animation.frame);
 		that.object.style.backgroundPosition = bgPos;
-//		console.log(that.object.style.backgroundPosition);
 	},
 	// loop through objects for current state and get dependancies
 	solidifyStates: function() {
@@ -103,12 +107,23 @@ var game = {
 					$.ajaxSetup({async:false});
 					$.getScript(dep[j]['src'],function(data) {game['states'][s][name] = eval(name);});
 					var c = o[name];
-//					console.log(name); console.log(o[name]);
-					if (c.hasOwnProperty('config') && c['config'].hasOwnProperty('dependancies')) {
-						var dep2 = c['config']['dependancies'];
+					// check for dependancies
+					if (c.hasOwnProperty('config') && c.config.hasOwnProperty('dependancies')) {
+						var dep2 = c.config.dependancies;
 						for (k=0;k<dep2.length;k++) {
-							var name2 = dep2[k]['name'];
-							$.getJSON(dep2[k]['src'],function(data) {c[name2] = data[name2];});
+							var names = dep2[k].name;
+							// get multiple dependancies
+							$.getJSON(dep2[k]['src'],function(data) {
+								// check for multiple names
+								if (Object.prototype.toString.call(names) === '[object Array]') {
+									for (p=0;p<names.length;p++) {
+										// assign bits of data based on names
+										c[names[p]] = data[names[p]];
+									}
+								} else {
+									c[names] = data[names];
+								}
+							});
 						}
 					}
 					$.ajaxSetup({async:true});

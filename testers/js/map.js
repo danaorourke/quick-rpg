@@ -139,10 +139,12 @@ var game = {
 
 	// REPLACEMENT FUNCTIONS FOR GAME BELOW
 	// get the json for map
+	// fie - hard coded
 	getMaps: function() {
 		$.ajaxSetup({async:false});
 		$.getJSON('/js/world/maps.json', function(data){
 			game.map.maps = data.maps;
+			game.map.tilesets = data.tilesets;
 	//		console.log(data);
 		}).fail(function(jqxhr, textStatus, error){
 			console.log('Request Failed: '+textStatus+', '+error);
