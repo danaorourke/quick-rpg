@@ -83,7 +83,18 @@ var map = {
 		// kill update queue
 		this.update.flag = false;
 	},
-	
+	// given to player
+	getMapAttributes: function(){
+		var m = {
+			h: this.maps[this.map].h,
+			w: this.maps[this.map].w,
+			t: {
+				h: this.tilesets[this.maps[this.map].tileset].h,
+				w: this.tilesets[this.maps[this.map].tileset].w
+			}
+		};
+		return m;
+	},
 	// for loading and rendering maps
 	getMapDetails: function() {
 		var tileset = this.maps[this.map].tileset;

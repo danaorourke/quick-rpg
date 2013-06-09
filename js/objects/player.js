@@ -113,11 +113,11 @@ var player = {
 		game.animator(this,'walk',d);	
 	},
 	move: function(d,amt) {
-		var bound_h = game.canvas.viewport.h - this.sprite.h - (map.maps.tilesize.h/2);
-		var bound_w = game.canvas.viewport.w - this.sprite.w - (map.maps.tilesize.w/2);
+		var bound_h = game.canvas.viewport.h - this.sprite.h - (map.tilesets.tile.h/2);
+		var bound_w = game.canvas.viewport.w - this.sprite.w - (map.tilesets.tile.w/2);
 		switch(d) {
 			case 'up':
-				if (this.location.y >= ((this.sprite.h/2) - map.maps.tilesize.h)) {
+				if (this.location.y >= ((this.sprite.h/2) - map.tilesets.tile.h)) {
 					this.location.y = this.location.y - amt;
 					this.object.style.top = this.location.y+'px';
 				} else { map.queueScroll(d); }
@@ -135,7 +135,7 @@ var player = {
 				} else { map.queueScroll(d); }
 			break;
 			case 'left':
-				if (this.location.x >= (this.sprite.w - (map.maps.tilesize.w/2))) {
+				if (this.location.x >= (this.sprite.w - (map.tilesets.tile.w/2))) {
 					this.location.x = this.location.x - amt;
 					this.object.style.left = this.location.x+'px';
 				} else { map.queueScroll(d); }
