@@ -11,18 +11,33 @@
     <![endif]-->
     <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js" ></script>
     <link rel="stylesheet" media="all" href="/css/style.css">
+    <style type="text/css">
+		form ul {display: block; margin: 0px auto; min-height: 32px; padding-bottom: 20px; width: 50%;}
+		form ul li {display: block; float: left; width: 50%;}
+		.tileset {margin: 0 auto;}
+		#pass {display: none;}
+    </style>
 </head>
 	
 <body lang="en">
 	<header id="header"><h1>Tileset Test</h1></header>
-	<section id="gamespace"></section>
+	<section id="gamespace">
+		<form>
+			<fieldset>
+				<ul>
+					<li><input type="radio" name="show" value="tile_id" id="c_tile" checked="checked"><label for="c_tile">Tile IDs</label></li>
+					<li><input type="radio" name="show" value="pass" id="c_pass"><label for="c_pass">Passthrough Values</label></li>
+				</ul>
+			</fieldset>
+		</form>
+	</section>
 	<section id="test"></section>
 	<footer id="footer">Cup of Tea Creations &copy;2013</footer>
 	<script type="text/javascript" src="/js/objects/map.js"></script>
 	<script type="text/javascript" src="js/tileset.js"></script>
 	<script type="text/javascript">
 		$(document).ready(function(){
-			tileset.init('tileset',480,192);
+			tileset.init('main');
 		});
 	</script>
 </body>

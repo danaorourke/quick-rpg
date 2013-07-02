@@ -52,7 +52,7 @@ var game = {
 		// poke the interface
 		this.scrollMap();
 		this.createTooltip();
-//		this.manageLayers();
+	//	this.manageLayers();
 	//	this.manageEvents();
 	//	this.manageColors();
 	},

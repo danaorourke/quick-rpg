@@ -15,7 +15,8 @@ var map = {
 	},
 	// dataset, all maps - from json
 	maps: null,
-	tilesets: null,
+	obstacles: null,
+	tilesets: null, // tilesets = src, pass, h, w, computed cols, rows
 	// current map to get, defaults to barren
 	map: 'barren',
 	
@@ -24,7 +25,7 @@ var map = {
 		// check for existing element and remove it?
 		this.map = name;
 		this.getMapDetails();
-		this.renderStyles();
+		this.renderTileset();
 		
 		this.canvas.object = game.makeNode({wrap:'div',id:'map'});
 		
@@ -50,8 +51,8 @@ var map = {
 	scrollMap: function() {
 		// check up and resolve
 		if (this.events.direction.up) {
-			if (this.canvas.offset.y < 0) {
-				this.offset.y += this.tile.h;
+			if (this.offset.y < 0) {
+				this.offset.y += this.tilesets.tile.h;
 				this.canvas.object.style.top = this.offset.y+'px';
 			}
 			this.events.direction.up = false;
@@ -103,7 +104,7 @@ var map = {
 		this.tilesets[tileset].rows = this.tilesets[tileset].w / this.tilesets.tile.w;
 		this.tilesets[tileset].cols = this.tilesets[tileset].h / this.tilesets.tile.h;
 	},
-	renderStyles: function() {
+	renderTileset: function() {
 		// tileset now referred to by name in map.
 		var ts_name = this.maps[this.map].tileset;
 		var tileset = this.tilesets[ts_name];
@@ -119,12 +120,15 @@ var map = {
 
 		// each tileid
 		var max = tileset.cols * tileset.rows;
-		for (i=1;i<=max;i++) {
-			style += '	#map .'+ts_name+' .t_'+i+' {background-position: ';
-			var r = (i%tileset.rows);
-			if (r == 0) style += '-'+((tileset.rows-1)*this.tilesets.tile.w)+'px -'+((Math.floor(i/tileset.rows-1)*this.tilesets.tile.h))+'px';
-			else style += '-'+((r-1)*this.tilesets.tile.w)+'px -'+(Math.floor(i/tileset.rows)*this.tilesets.tile.h)+'px';
-			style += ";}\n";
+		for (id=1;id<=max;id++) {
+			style += '	#map .'+ts_name+' .t_'+id+' {background-position: ';
+			var r = (id%tileset.rows);
+			if (r == 0) style += '-'+((tileset.rows-1)*this.tilesets.tile.w)+'px -'+((Math.floor(id/tileset.rows-1)*this.tilesets.tile.h))+'px';
+			else style += '-'+((r-1)*this.tilesets.tile.w)+'px -'+(Math.floor(id/tileset.rows)*this.tilesets.tile.h)+'px';
+			style += ";}\n";			
+			// save id as pass value
+//			console.log(id+': '+tileset.pass[id-1]);
+			//console.log(i);
 		}
 		this.style.innerHTML = style;
 		game.appendToHead(this.style);

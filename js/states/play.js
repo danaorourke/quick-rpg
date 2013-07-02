@@ -11,7 +11,7 @@ var play = {
 	
 	// necessary
 	init: function(){
-		this.map.init('barren');
+		this.map.init('garden');
 		this.player.init();
 	},
 	animate: function(){

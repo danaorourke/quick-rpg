@@ -8,6 +8,7 @@ var player = {
 	stats:{hp:0,e:0},
 	object: null,
 	sprite:{
+		offset: {h:32,w:16},
 		h:48,
 		w:32,
 		animations: {
@@ -48,8 +49,8 @@ var player = {
 		this.stats.hp = 100;
 		this.stats.e = 100;
 		
-		this.location.x = 10;
-		this.location.y = 10;
+		this.location.x = 100;
+		this.location.y = 100;
 		
 		var o = {wrap: 'div', id: 'player'};
 		this.object = game.makeNode(o);
@@ -113,33 +114,44 @@ var player = {
 		game.animator(this,'walk',d);	
 	},
 	move: function(d,amt) {
+		var loc = {
+			x: this.location.x+this.sprite.offset.w,
+			y: this.location.y+this.sprite.offset.h
+		};
+		var c = game.getCollisions(loc, d, amt);
+		//console.log(this.location.x,this.location.y);
+		console.log(c);
+		// this sets the scroll part of the viewport. Player should be non-restricted if scroll is not possible.
 		var bound_h = game.canvas.viewport.h - this.sprite.h - (map.tilesets.tile.h/2);
 		var bound_w = game.canvas.viewport.w - this.sprite.w - (map.tilesets.tile.w/2);
-		switch(d) {
-			case 'up':
-				if (this.location.y >= ((this.sprite.h/2) - map.tilesets.tile.h)) {
-					this.location.y = this.location.y - amt;
-					this.object.style.top = this.location.y+'px';
-				} else { map.queueScroll(d); }
-			break;
-			case 'right':
-				if (this.location.x < bound_w) {
-					this.location.x = this.location.x + amt;
-					this.object.style.left = this.location.x+'px';
-				} else { map.queueScroll(d); }
-			break;
-			case 'down':
-				if (this.location.y < bound_h) {
-					this.location.y = this.location.y + amt;
-					this.object.style.top = this.location.y+'px';
-				} else { map.queueScroll(d); }
-			break;
-			case 'left':
-				if (this.location.x >= (this.sprite.w - (map.tilesets.tile.w/2))) {
-					this.location.x = this.location.x - amt;
-					this.object.style.left = this.location.x+'px';
-				} else { map.queueScroll(d); }
-			break;
+		// move based on dir
+		if (c === false) {
+			switch(d) {
+				case 'up':
+					if (this.location.y >= ((this.sprite.h/2) - map.tilesets.tile.h)) {
+						this.location.y = this.location.y - amt;
+						this.object.style.top = this.location.y+'px';
+					} else { map.queueScroll(d); }
+				break;
+				case 'right':
+					if (this.location.x < bound_w) {
+						this.location.x = this.location.x + amt;
+						this.object.style.left = this.location.x+'px';
+					} else { map.queueScroll(d); }
+				break;
+				case 'down':
+					if (this.location.y < bound_h) {
+						this.location.y = this.location.y + amt;
+						this.object.style.top = this.location.y+'px';
+					} else { map.queueScroll(d); }
+				break;
+				case 'left':
+					if (this.location.x >= (this.sprite.w - (map.tilesets.tile.w/2))) {
+						this.location.x = this.location.x - amt;
+						this.object.style.left = this.location.x+'px';
+					} else { map.queueScroll(d); }
+				break;
+			}
 		}
 	}
 };
