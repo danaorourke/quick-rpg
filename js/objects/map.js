@@ -39,14 +39,58 @@ var map = {
 	update: function() {
 		if (this.events.flag) this.scrollMap();
 	},
-	
-	// for updating and scrolling map
+	/* 	player can request map update. This is the function it calls.
+		returns a flag of either true or the bounds its returning at.
+	*/ 
 	queueScroll: function(d) {
-		if (d == 'up') this.events.direction.up = true;
-		else if (d == 'down') this.events.direction.down = true;
-		else if (d == 'right') this.events.direction.right = true;
-		else if (d == 'left') this.events.direction.left = true;
-		this.events.flag = true;
+		var m = {flag:false};
+		// scroll based on viewport bounds and map size
+		if (d === 'up') {
+			m.bound = 0;
+			if (this.offset.y < m.bound) {
+				this.events.flag = true;
+				this.events.direction.up = true;
+				m.flag = true;
+			}
+		} else if (d === 'down') {
+			// get cols and subtract 
+			var cols = {
+				offset: Math.abs(this.offset.y)/this.tilesets.tile.h,
+				map: this.maps[this.map].h/this.tilesets.tile.h
+			};
+			if (game.canvas.viewport.h % this.tilesets.tile.h == 0) cols.viewport = game.canvas.viewport.h / this.tilesets.tile.h;
+			else cols.viewport = Math.floor(game.canvas.viewport.h / this.tilesets.tile.h)+1;
+			
+			m.bound = cols.map - cols.viewport;
+			if (cols.offset < m.bound) {
+				this.events.flag = true;
+				this.events.direction.down = true;
+				m.flag = true;
+			}
+		} else if (d === 'right') {
+			var cols = {
+				offset: Math.abs(this.offset.x) / this.tilesets.tile.w,
+				map: this.maps[this.map].w / this.tilesets.tile.w
+			};
+			if (game.canvas.viewport.w % this.tilesets.tile.w == 0) cols.viewport = game.canvas.viewport.w / this.tilesets.tile.w;
+			else cols.viewport = Math.floor(game.canvas.viewport.w / this.tilesets.tile.w)+1;
+
+			m.bound = cols.map - cols.viewport;
+			if (cols.offset < m.bound) {
+				this.events.flag = true;
+				this.events.direction.right = true;
+				m.flag = true;
+			}
+		} else if (d === 'left') {
+			m.bound = 0;
+			if (this.offset.x < m.bound) {
+				this.events.flag = true;
+				this.events.direction.left = true;
+				m.flag = true;
+			}
+		}
+//		console.log('map says flag is:'+m.flag);
+		return m;
 	},
 	scrollMap: function() {
 		// check up and resolve
@@ -59,7 +103,7 @@ var map = {
 		}
 		// check down and resolve
 		if (this.events.direction.down) {
-			if (this.offset.y > ((this.maps[this.map]['h']-(this.maps[this.map]['h']*2))+game.canvas.viewport.h)) {
+			if (Math.abs(this.offset.y) < (this.maps[this.map].h - game.canvas.viewport.h)) {
 				this.offset.y -= this.tilesets.tile.h;
 				this.canvas.object.style.top = this.offset.y+'px';
 			}
@@ -67,11 +111,19 @@ var map = {
 		}
 		// check right and resolve
 		if (this.events.direction.right) {
-			if (this.offset.x > ((this.maps[this.map]['w']-(this.maps[this.map]['w']*2))+game.canvas.viewport.w + (this.tilesets.tile.w/2))) {
+		/*	if (this.offset.x > ((this.maps[this.map]['w']-(this.maps[this.map]['w']*2))+game.canvas.viewport.w + (this.tilesets.tile.w/2))) {*/
+			var cols = {
+				offset: Math.floor(Math.abs(this.offset.x)/this.tilesets.tile.w),
+				map: this.maps[this.map].w/this.tilesets.tile.w
+			};
+			if (game.canvas.viewport%this.tilesets.tile.w == 0) cols.viewport = Math.floor(game.canvas.viewport.w/this.tilesets.tile.w);
+			else cols.viewport = Math.floor(game.canvas.viewport.w/this.tilesets.tile.w)+1;
+			console.log(cols);
+			if (cols.offset < (cols.map - cols.viewport)) {
 				this.offset.x -= this.tilesets.tile.h;
 				this.canvas.object.style.left = this.offset.x+'px';
 			}
-			this.events.direction.right = false;		
+			this.events.direction.right = false;
 		}
 		// check left and resolve
 		if (this.events.direction.left) {

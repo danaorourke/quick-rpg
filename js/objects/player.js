@@ -8,7 +8,7 @@ var player = {
 	stats:{hp:0,e:0},
 	object: null,
 	sprite:{
-		offset: {h:32,w:16},
+		offset: {h:48,w:16},
 		h:48,
 		w:32,
 		animations: {
@@ -49,8 +49,8 @@ var player = {
 		this.stats.hp = 100;
 		this.stats.e = 100;
 		
-		this.location.x = 100;
-		this.location.y = 100;
+		this.location.x = 200;
+		this.location.y = 200;
 		
 		var o = {wrap: 'div', id: 'player'};
 		this.object = game.makeNode(o);
@@ -64,11 +64,9 @@ var player = {
 			if (document.all)	{e = window.event;}
 			if (document.layers || e.which) {key = e.which;}
 			if (document.all)	{key = e.keyCode;}
-//			alert(' [Decimal value = ' + key + ']');
-			
+//			alert(' [Decimal value = ' + key + ']');		
 			if (key == 87 || key == 38) {player.state.up = true;}
 			else if (key == 83|| key == 40) {player.state.down = true;}
-
 			if (key == 68 || key == 39) {player.state.right = true;}
 			else if (key == 65 || key == 37) {player.state.left = true;}
 			
@@ -78,29 +76,12 @@ var player = {
 			if (document.all) {e = window.event;}
 			if (document.layers || e.which) {key = e.which;}
 			if (document.all) {key = e.keyCode;}
-			
 			if (key == 87 || key == 38) {player.state.up = false;}
 			else if (key == 83 || key == 40) {player.state.down = false;}
-
 			if (key == 68 || key == 39) {player.state.right = false;}
-			else if (key == 65 || key == 37) {player.state.left = false;}
-			
+			else if (key == 65 || key == 37) {player.state.left = false;}	
 			// the animation frame and positions need to be reset to neutral.
 		};
-/*
-		var keyDown = game.getKeyCode('down');
-		console.log('keyDown: '+keyDown);
-		if (keyDown == 87 || keyDown == 38) {this.state.up = true;}
-		else if (keyDown == 83|| keyDown == 40) {this.state.down = true;}
-		if (keyDown == 68 || keyDown == 39) {this.state.right = true;}
-		else if (keyDown == 65 || keyDown == 37) {this.state.left = true;}
-	
-		var keyUp = game.getKeyCode('up');
-		console.log('keyUp: '+keyUp);
-		if (keyUp == 87 || keyUp == 38) {this.state.up = false;}
-		else if (keyUp == 83 || keyUp == 40) {this.state.down = false;}
-		if (keyUp == 68 || keyUp == 39) {this.state.right = false;}
-		else if (keyUp == 65 || keyUp == 37) {this.state.left = false;}*/
 	},
 	animate: function() {
 		if (this.state.up) this.walk('up');
@@ -111,46 +92,52 @@ var player = {
 	// player specific
 	walk: function(d) {
 		this.move(d,6);
-		game.animator(this,'walk',d);	
+		game.animator(this,'walk', d);	
 	},
 	move: function(d,amt) {
-		var loc = {
-			x: this.location.x+this.sprite.offset.w,
-			y: this.location.y+this.sprite.offset.h
+		var loc = {	x: this.location.x+this.sprite.offset.w, y: this.location.y+this.sprite.offset.h};
+		//console.log(loc.x,loc.y);
+		var bounds = {
+			r: game.canvas.viewport.w - this.sprite.h - (map.tilesets.tile.w*3),
+			d: game.canvas.viewport.h - this.sprite.w - (map.tilesets.tile.h*3),
+			u: (this.sprite.h/2) + (map.tilesets.tile.h*3),
+			l: (this.sprite.w/2) + (map.tilesets.tile.w*3)
 		};
+		// console.log('r:'+bounds.r+' d:'+bounds.d+' u:'+bounds.u+' l:'+bounds.l);
+		// collision check
 		var c = game.getCollisions(loc, d, amt);
-		//console.log(this.location.x,this.location.y);
-		console.log(c);
-		// this sets the scroll part of the viewport. Player should be non-restricted if scroll is not possible.
-		var bound_h = game.canvas.viewport.h - this.sprite.h - (map.tilesets.tile.h/2);
-		var bound_w = game.canvas.viewport.w - this.sprite.w - (map.tilesets.tile.w/2);
-		// move based on dir
 		if (c === false) {
-			switch(d) {
-				case 'up':
-					if (this.location.y >= ((this.sprite.h/2) - map.tilesets.tile.h)) {
-						this.location.y = this.location.y - amt;
-						this.object.style.top = this.location.y+'px';
-					} else { map.queueScroll(d); }
-				break;
-				case 'right':
-					if (this.location.x < bound_w) {
-						this.location.x = this.location.x + amt;
-						this.object.style.left = this.location.x+'px';
-					} else { map.queueScroll(d); }
-				break;
-				case 'down':
-					if (this.location.y < bound_h) {
-						this.location.y = this.location.y + amt;
-						this.object.style.top = this.location.y+'px';
-					} else { map.queueScroll(d); }
-				break;
-				case 'left':
-					if (this.location.x >= (this.sprite.w - (map.tilesets.tile.w/2))) {
-						this.location.x = this.location.x - amt;
-						this.object.style.left = this.location.x+'px';
-					} else { map.queueScroll(d); }
-				break;
+			var scroll;// = map.queueScroll(d);
+			if (d === 'up' || d === 'down') {
+				if (d === 'up') {
+					if (this.location.y >= bounds.u) this.location.y -= amt;
+					else {
+						scroll = map.queueScroll(d);
+						if (scroll.flag === false && this.location.y > scroll.bound) this.location.y -= amt;
+					}
+				} else { // down
+					if (this.location.y < bounds.d) this.location.y += amt;
+					else {
+						scroll = map.queueScroll(d);
+						if (scroll.flag === false && (this.location.y + this.sprite.h) < game.canvas.viewport.h) this.location.y += amt;
+					}
+				}
+				this.object.style.top = this.location.y+'px';
+			} else if (d === 'left' || d === 'right') {
+				if (d === 'left') {
+					if (this.location.x > bounds.l) this.location.x -= amt;
+					else {
+						scroll = map.queueScroll(d);
+						if (scroll.flag === false && this.location.x > scroll.bound) this.location.x -= amt;
+					}
+				} else { // right
+					if (this.location.x < bounds.r) this.location.x += amt;
+					else {
+						scroll = map.queueScroll(d);
+						if (scroll.flag === false && (this.location.x + this.sprite.w) < game.canvas.viewport.w) this.location.x += amt;
+					}
+				}
+				this.object.style.left = this.location.x+'px';
 			}
 		}
 	}
