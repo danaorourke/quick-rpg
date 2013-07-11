@@ -1,22 +1,18 @@
 var map = {
-	config: {
-		dependancies: [
-			{src: 'js/world/maps.json', name: ["maps","tilesets"]}
-		]
-	},
+	config: { dependancies: [{src: 'js/world/maps.json', name: ["maps","tilesets"]}] },
 	events: {
 		flag: false,
 		direction: {up: false, down:false, right: false, left: false}	
 	},
-	offset: {x:0,y:0},
+	offset: {x:0, y:0},
 	canvas: {
 		object: null,
 		style: null
 	},
-	// dataset, all maps - from json
+	// dataset, all maps - from json = level, ground, above, tileset
 	maps: null,
-	obstacles: null,
-	tilesets: null, // tilesets = src, pass, h, w, computed cols, rows
+	// tilesets = src, pass, h, w, computed cols, rows, passthrough
+	tilesets: null,
 	// current map to get, defaults to barren
 	map: 'barren',
 	
@@ -36,12 +32,11 @@ var map = {
 		game.appendToCanvas(this.canvas.object);
 	},
 	animate: function() {},
+	// check for flags and update appropriately
 	update: function() {
 		if (this.events.flag) this.scrollMap();
 	},
-	/* 	player can request map update. This is the function it calls.
-		returns a flag of either true or the bounds its returning at.
-	*/ 
+	// player requested map scrolling - returns t/f and bound val, column based.
 	queueScroll: function(d) {
 		var m = {flag:false};
 		// scroll based on viewport bounds and map size
@@ -58,7 +53,7 @@ var map = {
 				offset: Math.abs(this.offset.y)/this.tilesets.tile.h,
 				map: this.maps[this.map].h/this.tilesets.tile.h
 			};
-			if (game.canvas.viewport.h % this.tilesets.tile.h == 0) cols.viewport = game.canvas.viewport.h / this.tilesets.tile.h;
+			if (game.canvas.viewport.h % this.tilesets.tile.h === 0) cols.viewport = game.canvas.viewport.h / this.tilesets.tile.h;
 			else cols.viewport = Math.floor(game.canvas.viewport.h / this.tilesets.tile.h)+1;
 			
 			m.bound = cols.map - cols.viewport;
@@ -72,7 +67,7 @@ var map = {
 				offset: Math.abs(this.offset.x) / this.tilesets.tile.w,
 				map: this.maps[this.map].w / this.tilesets.tile.w
 			};
-			if (game.canvas.viewport.w % this.tilesets.tile.w == 0) cols.viewport = game.canvas.viewport.w / this.tilesets.tile.w;
+			if (game.canvas.viewport.w % this.tilesets.tile.w === 0) cols.viewport = game.canvas.viewport.w / this.tilesets.tile.w;
 			else cols.viewport = Math.floor(game.canvas.viewport.w / this.tilesets.tile.w)+1;
 
 			m.bound = cols.map - cols.viewport;
@@ -89,7 +84,6 @@ var map = {
 				m.flag = true;
 			}
 		}
-//		console.log('map says flag is:'+m.flag);
 		return m;
 	},
 	scrollMap: function() {
@@ -118,7 +112,7 @@ var map = {
 			};
 			if (game.canvas.viewport%this.tilesets.tile.w == 0) cols.viewport = Math.floor(game.canvas.viewport.w/this.tilesets.tile.w);
 			else cols.viewport = Math.floor(game.canvas.viewport.w/this.tilesets.tile.w)+1;
-			console.log(cols);
+			//console.log(cols);
 			if (cols.offset < (cols.map - cols.viewport)) {
 				this.offset.x -= this.tilesets.tile.h;
 				this.canvas.object.style.left = this.offset.x+'px';
@@ -177,10 +171,7 @@ var map = {
 			var r = (id%tileset.rows);
 			if (r == 0) style += '-'+((tileset.rows-1)*this.tilesets.tile.w)+'px -'+((Math.floor(id/tileset.rows-1)*this.tilesets.tile.h))+'px';
 			else style += '-'+((r-1)*this.tilesets.tile.w)+'px -'+(Math.floor(id/tileset.rows)*this.tilesets.tile.h)+'px';
-			style += ";}\n";			
-			// save id as pass value
-//			console.log(id+': '+tileset.pass[id-1]);
-			//console.log(i);
+			style += ";}\n";
 		}
 		this.style.innerHTML = style;
 		game.appendToHead(this.style);
