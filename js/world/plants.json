@@ -1,0 +1,31 @@
+{	"sprite":{
+		"sheet": {
+			"src": "/img/plants.png",
+			"h": 384,
+			"w": 288
+		},
+		"h": 48,
+		"w": 32
+	},
+	"stages": [
+		{ "name":"sprout", "sprite":1 },
+		{ "name":"sappling", "sprite":2 },
+		{ "name":"buding", "sprite":3 },
+		{ "name":"fruiting", "sprite":4 },
+		{ "name":"waiting", "sprite":5 }
+	],
+	"types": {
+		"corn": {
+			"sprite": 7,
+			"cycle": 10,
+			"renew": true,
+			"reseed": false
+		},
+		"carrot": {
+			"sprite": 3,
+			"cycle": 5,
+			"renew": false,
+			"reseed": true
+		}
+	}
+}
