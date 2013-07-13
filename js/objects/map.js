@@ -23,7 +23,6 @@ var map = {
 		// render layers, in order
 		if (this.maps[this.map].hasOwnProperty('ground')) this.renderLayer('ground');
 		if (this.maps[this.map].hasOwnProperty('level')) this.renderLayer('level');
-		if (this.maps[this.map].hasOwnProperty('events')) this.renderEvents();
 		if (this.maps[this.map].hasOwnProperty('above')) this.renderLayer('above');
 		// attach it all to the canvas
 		game.appendToCanvas(this.canvas.object);
@@ -34,7 +33,10 @@ var map = {
 		if (this.events.flag) this.scrollMap();
 	},
 	// play state requests event data
-	getEvents: function() {},
+	getEvents: function() {
+		if (this.maps[this.map].hasOwnProperty('events') && this.maps[this.map].events.length > 0) return this.maps[this.map].events;
+		else return false;
+	},
 	// player requested map scrolling - returns t/f and bound val, column based.
 	queueScroll: function(d) {
 		var m = {flag:false};
@@ -135,8 +137,12 @@ var map = {
 			w: this.maps[this.map].w,
 			t: {
 				h: this.tilesets[this.maps[this.map].tileset].h,
-				w: this.tilesets[this.maps[this.map].tileset].w
-			}
+				w: this.tilesets[this.maps[this.map].tileset].w,
+				t: {
+					h: this.tilesets.tile.h,
+					w: this.tilesets.tile.w
+				}
+			} 
 		};
 		return m;
 	},
@@ -183,7 +189,7 @@ var map = {
 			// for each tile
 			for (j=0;j<l[i].length;j++) {
 				var tile;
-				if (l[i][j] == 0) tile = {wrap:'span',className:'blank'};
+				if (l[i][j] == 0) tile = {wrap:'span', className:'blank'};
 				else tile = {wrap:'span',className:'t_'+l[i][j]};
 				tile = game.makeNode(tile);
 				layer.appendChild(tile);

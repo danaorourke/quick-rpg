@@ -4,15 +4,28 @@ var plant = {
 	// contains all plants
 	objects: [], // o - canvas, type, stage (1-5),
 	
-	init: function(p) {
+	init: function(plants) {
 		this.renderTypes();
 		this.canvas = game.makeNode({wrap:'div',id:'plants'});
 		// for each var in the array given
-		for (i=0;i<p.length;i++) {
+		var p, loc;
+		var m = map.getMapAttributes(); //console.log(m);
+		for (i=0;i<plants.length;i++) {
+			p = plants[i];
 			// check that type and amt were passed
-			if (p[i].hasOwnProperty('type') && p[i].hasOwnProperty('amt')) {
-				// for amount, create object, instantiate object
-				for(j=0;j<p[i].amt;j++) this.sprout(p[i].type,j);
+			// rewrite to default to 1, loc 
+			if (p.hasOwnProperty('type') && p.hasOwnProperty('amt') && p.hasOwnProperty('loc')) {
+				for (j=0;j<p.amt;j++) {
+					//o.style.top =  Math.floor(Math.random()*(m.h-0))+'px'; // this shouldn't be random. It should be based on nodes in Events.
+					//o.style.left = Math.floor(Math.random()*(m.w-0))+'px';
+					loc = {
+						x: Math.floor(Math.random()*(p.loc.b.x-p.loc.a.x)+p.loc.a.x)*m.t.t.w,
+						y: Math.floor(Math.random()*(p.loc.b.y-p.loc.a.y)+p.loc.a.x)*m.t.t.h
+					};
+					console.log(loc.x, loc.y);
+					// next step - ensure that's legitimate.
+					this.sprout(p.type,j,loc);
+				}
 			}
 		}
 		game.appendToCanvas(this.canvas,'map');
@@ -42,11 +55,12 @@ var plant = {
 		game.appendToHead(this.style);
 	},
 	// create new plants, according to type, set to sprout
-	sprout: function(t,id) {
+	sprout: function(t,id,l) {
 		var o = game.makeNode({wrap:'div',id:t+'_'+id, className: t+' sprout'});
-		this.objects.push({type: t, id: t+'_'+id, created: Date.now(), stage: 1, object: o});
-		// finish styles 
-		var m = map.getMapAttributes(); //console.log(m);
+		// adjust for height of individual sprout
+		o.style.top = l.y+'px';
+		o.style.left = l.x+'px';
+		this.objects.push({type: t, id: t+'_'+id, created: Date.now(), stage: 1, object: o, loc: l});
 		//o.style.top =  Math.floor(Math.random()*(m.h-0))+'px'; // this shouldn't be random. It should be based on nodes in Events.
 		//o.style.left = Math.floor(Math.random()*(m.w-0))+'px';
 		this.canvas.appendChild(o);
