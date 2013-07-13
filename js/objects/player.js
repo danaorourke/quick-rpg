@@ -5,7 +5,7 @@ var player = {
 		right: false,
 		left: false
 	},
-	stats:{hp:0,e:0},
+	stats:{hp:100,e:100},
 	object: null,
 	sprite:{
 		offset: {h:48,w:16},
@@ -46,9 +46,6 @@ var player = {
 	
 	// engine requisit functions	
 	init: function() {
-		this.stats.hp = 100;
-		this.stats.e = 100;
-		
 		this.location.x = 200;
 		this.location.y = 200;
 		
@@ -105,7 +102,7 @@ var player = {
 		};
 		// console.log('r:'+bounds.r+' d:'+bounds.d+' u:'+bounds.u+' l:'+bounds.l);
 		// collision check
-		var c = game.getCollisions(loc, d, amt);
+		var c = play.getCollisions(loc, d, amt);
 		if (c === false) {
 			var scroll;// = map.queueScroll(d);
 			if (d === 'up' || d === 'down') {
@@ -133,7 +130,7 @@ var player = {
 				} else { // right
 					if (this.location.x < bounds.r) this.location.x += amt;
 					else {
-						scroll = map.queueScroll(d);
+						scroll = map.queueScroll(d); //console.log('scroll queued');
 						if (scroll.flag === false && (this.location.x + this.sprite.w) < game.canvas.viewport.w) this.location.x += amt;
 					}
 				}

@@ -21,5 +21,10 @@ var play = {
 		this.map.update();
 		this.player.update();
 		this.plant.update();
+	},
+	getCollisions: function(loc,dir,amt) {
+	// loc = x,y dir = l,r,u,d amt = numeric
+		return map.getCollisions(loc,dir,amt);
+		// return plant.getCollisions();
 	}
 };

@@ -53,13 +53,14 @@ var game = {
 			if (t.hasOwnProperty('className') && (t.className != null && t.id != '')) o.className = t.className;
 			if (t.hasOwnProperty('content') && (t.content != null && t.content != '')) o.innerHTML = t.content;
 			return o;
-		}
+		} else return false;
 	},
-	appendToHead: function(o) {
-		game.canvas.head.appendChild(o);	
-	},
-	appendToCanvas: function(o) {
-		game.canvas.object.appendChild(o);
+	// put given style element in head
+	appendToHead: function(o) {game.canvas.head.appendChild(o);},
+	// put given object either in the gamespace or inside the specified container.
+	appendToCanvas: function(o,t) {
+		if (t === null || t === undefined) game.canvas.object.appendChild(o);
+		else eval(t).canvas.object.appendChild(o);
 	},
 	animator: function(that,a,d) {
 		var lastFrame = that.sprite.animation.frame;
@@ -117,13 +118,8 @@ var game = {
 							$.getJSON(dep2[k]['src'],function(data) {
 								// check for multiple names
 								if (Object.prototype.toString.call(names) === '[object Array]') {
-									for (p=0;p<names.length;p++) {
-										// assign bits of data based on names
-										c[names[p]] = data[names[p]];
-									}
-								} else {
-									c[names] = data[names];
-								}
+									for (p=0;p<names.length;p++) c[names[p]] = data[names[p]];
+								} else c[names] = data[names];
 							});
 						}
 					}
@@ -133,86 +129,20 @@ var game = {
 		} 
 	},
 	getStates: function() {
-		var count = 0;
-		var stateNames = [];
+		var o = {length:0,name:[]};
 		for (var i in this.states) {
-			stateNames.push(i);
-			count++;
+			o.name.push(i);
+			o.length++;
 		}
-		var o = {length:count,name:stateNames};
-		delete(count,stateNames);
 		return o;
 	},
-	// gets collisions from the map's tileset
-	getCollisions: function(loc,dir,amt) { // loc = x,y dir = l,r,u,d amt = numeric
-	
-		// move this into a map - seriously, dana.
-		if (map.maps[map.map].hasOwnProperty('level')) {
-			// check for map offset
-			if (map.offset.x != 0) loc.x = loc.x + Math.abs(map.offset.x);
-			if (map.offset.y != 0) loc.y = loc.y + Math.abs(map.offset.y);
-	
-			// get row
-			if ((loc.y % 32) === 0)	var cur_row = loc.y / 32;
-			else var cur_row = Math.floor(loc.y/ 32)+1;
-			// get col
-			if ((loc.x % 32) === 0) var cur_col = loc.x / 32;
-			else var cur_col = Math.floor(loc.x / 32)+1;
-			
-			// some helpful vars
-			var c = {
-				id: map.maps[map.map].level,
-				pass: map.tilesets[map.maps[map.map].tileset].pass
-			};
-			var m = {w: map.tilesets.tile.w, h: map.tilesets.tile.h};
-			var t = {}; var new_col, new_row;
-			// check based on direction for each movement increment
-			switch (dir) {
-				case 'left': 
-				for (i=1;i<=amt;i++) {
-					if ((loc.x-i) % m.w === 0) new_col = (loc.x-i)/m.w;
-					else new_col = Math.floor((loc.x-i)/m.w)+1;
-					t.id = c.id[cur_row-1][new_col-1];
-					t.pass = c.pass[t.id-1];
-					if (t.pass === 0 ) return true;
-				}
-				break;
-				case 'right':
-				for (i=1;i<=amt;i++) {
-					if ((loc.x+i) % m.w === 0) new_col = (loc.x+i)/m.w;
-					else new_col = Math.floor((loc.x+i)/m.w)+1;
-					t.id = c.id[cur_row-1][new_col-1];
-					t.pass = c.pass[t.id-1];
-					if (t.pass === 0 ) return true;
-				}
-				break;
-				case 'down':
-				for (i=1;i<=amt;i++) {
-					if ((loc.y+i) % m.h === 0) new_row = (loc.y+i)/m.h;
-					else new_row = Math.floor((loc.y+i)/m.h)+1;
-					t.id = c.id[new_row-1][cur_col-1];
-					t.pass = c.pass[t.id-1];
-					if (t.pass === 0 ) return true;
-				}
-				break;
-				case 'up':
-				for (i=1;i<=amt;i++) {
-					if ((loc.y-i) % m.h === 0) new_row = (loc.y-i)/m.h;
-					else new_row = Math.floor((loc.y-i)/m.h)+1;
-					t.id = c.id[new_row-1][cur_col-1];
-					t.pass = c.pass[t.id-1];
-					if (t.pass === 0 ) return true;
-				}
-				break;
-			}
-		}
-		return false;
-	},
 	getViewport: function() {
-		this.canvas.viewport.w = this.canvas.object.offsetWidth;
-		this.canvas.viewport.h = this.canvas.object.offsetHeight;
-	},
-	getKeyCode: function(dir) {
+		this.canvas.viewport = {
+			w: this.canvas.object.offsetWidth,
+			h: this.canvas.object.offsetHeight
+		}
+	}
+	/*getKeyCode: function(dir) {
 		if (dir == 'down') {
 			document.onkeyDown = function(e) {
 				var key;
@@ -223,5 +153,5 @@ var game = {
 				return key;
 			}
 		}
-	}
+	}*/
 };

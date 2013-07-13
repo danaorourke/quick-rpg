@@ -15,7 +15,7 @@ var plant = {
 				for(j=0;j<p[i].amt;j++) this.sprout(p[i].type,j);
 			}
 		}
-		game.appendToCanvas(this.canvas);
+		game.appendToCanvas(this.canvas,'map');
 	},
 	update: function() {},
 	animate: function() {},
@@ -34,7 +34,6 @@ var plant = {
 		// create state styles
 		var s = {count: 0, names:[]};
 		for (var i in this.states) {s.names.push(i); s.count++;}
-		console.log(s.count);
 		for (i=0;i<s.count;i++)	style += '#plants .'+s.names[i]+' {background-position-y: -'+((this.states[s.names[i]]-1)*this.sprite.h)+"px;}\n";
 		// create style and append to head
 		this.style = document.createElement('style');
@@ -48,8 +47,8 @@ var plant = {
 		this.objects.push({type: t, id: t+'_'+id, created: Date.now(), stage: 1, object: o});
 		// finish styles 
 		var m = map.getMapAttributes(); //console.log(m);
-		o.style.top =  Math.floor(Math.random()*(m.h-0))+'px'; // this shouldn't be random. It should be based on nodes in Events.
-		o.style.left = Math.floor(Math.random()*(m.w-0))+'px';
+		//o.style.top =  Math.floor(Math.random()*(m.h-0))+'px'; // this shouldn't be random. It should be based on nodes in Events.
+		//o.style.left = Math.floor(Math.random()*(m.w-0))+'px';
 		this.canvas.appendChild(o);
 	},
 	grow: function() {},
