@@ -66,6 +66,7 @@ var play = {
 	getCollisions: function(loc,dir,amt) {
 	// loc = x,y dir = l,r,u,d amt = numeric
 		return this.map.getCollisions(loc,dir,amt);
+//		var p = this.plant.getCollisions(loc,dir,amt)
 		// return plant.getCollisions();
 	}
 };
