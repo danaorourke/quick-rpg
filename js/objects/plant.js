@@ -1,6 +1,10 @@
 var plant = {
 	// declares dependancies - child data, names, for game.getDependancies
 	config: { dependancies: [{src: 'js/world/plants.json', name: ["sprite","states","types"]}] },
+	events: {
+		flag: false,
+		
+	},
 	// contains all plants
 	objects: [], // o - canvas, type, stage (1-5),
 	
@@ -14,57 +18,67 @@ var plant = {
 			p = plants[i];
 			// check that type and amt were passed - rewrite to default to 1, loc 
 			if (p.hasOwnProperty('type') && p.hasOwnProperty('amt') && p.hasOwnProperty('loc')) {
-				for (j=0;j<p.amt;j++) {
-					console.log('iteration:'+j+' line 21');
+				for (var j=0;j<p.amt;j++) {
 					// generate a location based on the bounds
-					var loc = { self: true};
+					var loc = {self: true};
 					loc.x = Math.floor(Math.random()*(p.loc.b.x-p.loc.a.x)+p.loc.a.x)*m.t.t.w - this.sprite.w;
-					loc.y =Math.floor(Math.random()*(p.loc.b.y-p.loc.a.y)+p.loc.a.x)*m.t.t.h - this.sprite.h;
+					loc.y = Math.floor(Math.random()*(p.loc.b.y-p.loc.a.y)+p.loc.a.y)*m.t.t.h - this.sprite.h;
 					c = this.getCollisions(loc);
-					console.log("\tc started as "+c+'.');
 					while (c) {
 						loc.x = Math.floor(Math.random()*(p.loc.b.x-p.loc.a.x)+p.loc.a.x)*m.t.t.w - this.sprite.w;
-						loc.y = Math.floor(Math.random()*(p.loc.b.y-p.loc.a.y)+p.loc.a.x)*m.t.t.h - this.sprite.h;
+						loc.y = Math.floor(Math.random()*(p.loc.b.y-p.loc.a.y)+p.loc.a.y)*m.t.t.h - this.sprite.h;
 						c = this.getCollisions(loc);
-						console.log('self is '+loc.self);
-						console.log("\tc is "+c+" this iteration of while.");
 					}
 					this.sprout(p.type,j,loc);
+					delete(loc);
 				}
 			}
 		}
+		delete(p,c,m);
 		game.appendToCanvas(this.canvas,'map');
 	},
-	update: function() {},
+	update: function() {
+		
+	},
 	animate: function() {},
 	// get those collisions
-	getCollisions: function(o) { // o = {x,y,self}
-		console.log("\tgetCollisions says values are "+o.x+', '+o.y);
+	getCollisions: function(o,d,amt) { // o = {x,y,h,w,self}
 		if (o.hasOwnProperty('self') && o.self === true) {
-		// collisions requested from self, typicaly during creation. Only need to check one layer.
-			for (k=0;k<this.objects.length;k++) {	
-				console.log("\ti: "+k+' objects:'+this.objects.length);
-				if (o.x === this.objects[k].loc.x && o.y === this.objects[k].loc.y) {
-					console.log("\treturned true on "+k+' x:'+this.objects[k].loc.x+' y:'+this.objects[k].loc.y);
-					return true;
+			for (var k=0;k<this.objects.length;k++) {
+				if (o.x === this.objects[k].loc.x && o.y === this.objects[k].loc.y) return true;
+			}
+		} else {		
+			if (typeof d != 'undefined') {
+				if (typeof amt === 'undefined') var amt = 1;
+				var check = {}; var p = {};
+
+				if (d === 'up' || d === 'down') {
+					check.x = '(p.x <= o.x && (p.x+p.w) >= o.x) || (p.x <= (o.x+o.w) && (p.x+p.w) >= (o.x+o.w))';
+					if (d === 'up') check.y = 'p.y+p.h === o.y-a';
+					else check.y = 'p.y === o.y+o.h+a';
+				}
+				if (d === 'left' || d === 'right') {
+					check.y = '(p.y <= o.y && (p.y + p.h) >= o.y) || (p.y <= (o.y+o.h) && (p.y + p.h) >= (o.y+o.h))';					
+					if (d === 'left') check.x = 'p.x+p.w === o.x-a';
+					else check.x = 'p.x === o.x+o.w+a';
+				}
+				for (var i=0; i < this.objects.length; i++) {
+					p = {
+						x: this.objects[i].loc.x + this.sprite.offset.w,
+						y: this.objects[i].loc.y + this.sprite.offset.h,
+						h: this.sprite.h-this.sprite.offset.h,
+						w: this.sprite.w-this.sprite.offset.w
+					};
+					for (var a=1;a<=amt;a++) {
+						if ( (eval(check.y) && eval(check.x))) {
+							console.log("i is "+i);
+							return true;
+						}
+					}
 				}
 			}
-		}  else {
-			// collisions requested from elsewhere
 		}
-			/*				if ((o.x > this.objects[i].loc.x && o.x < (this.objects[i].loc.x + this.sprite.w)) && (o.y > this.objects[i].loc.y && o.y < (this.objects[i].loc.y + this.sprite.h))) c++;
-				p = {
-					a: {
-						x: o.x > this.objects[i].loc.x,
-						y: o.y > this.objects[i].loc.y
-					},
-					b: {
-						x: o.x < (this.objects[i].loc.x + this.sprite.w),
-						y: o.y < (this.objects[i].loc.y + this.sprite.h)
-					}
-				};
-				if ( ((p.a.x && p.a.y) && (p.b.x && p.b.y)) || () ) c++;*/
-		console.log("\treturn false line 83");
+		delete(o,d,amt);
 		return false;
 	},
 	// create style data
@@ -90,14 +104,19 @@ var plant = {
 	},
 	// create new plants, according to type, set to sprout
 	sprout: function(t,id,l) {
-		var o = game.makeNode({wrap:'div',id:t+'_'+id, className: t+' sprout'});
+		// change back to sprout!!
+		var o = game.makeNode({wrap:'div',id:t+'_'+id, className: t+' waiting'});
+		var top = game.makeNode({wrap:'span',className:'top'});
+		var bot = game.makeNode({wrap:'span',className:'bot'});
 		// adjust for height of individual sprout
 		o.style.top = l.y+'px';
 		o.style.left = l.x+'px';
-		this.objects.push({type: t, created: new Date().getTime(), stage: 1, object: o, loc: l});
+		o.appendChild(top);
+		o.appendChild(bot);
+		this.objects.push({type: t, created: new Date().getTime(), stage: 5, object: o, loc: l});
 		this.canvas.appendChild(o);
 	},
-	grow: function() {},
+	grow: function(id) {},
 	die: function() {},
 	seed: function() {}
 };

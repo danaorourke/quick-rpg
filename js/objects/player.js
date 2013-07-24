@@ -8,7 +8,7 @@ var player = {
 	stats:{hp:100,e:100},
 	object: null,
 	sprite:{
-		offset: {h:48,w:16},
+		offset: {h:32,w:0},
 		h:48,
 		w:32,
 		animations: {
@@ -92,8 +92,12 @@ var player = {
 		game.animator(this,'walk', d);	
 	},
 	move: function(d,amt) {
-		var loc = {	x: this.location.x+this.sprite.offset.w, y: this.location.y+this.sprite.offset.h};
-		//console.log(loc.x,loc.y);
+		var loc = {
+			x: this.location.x + this.sprite.offset.w,
+			y: this.location.y + this.sprite.offset.h,
+			h: this.sprite.h - this.sprite.offset.h,
+			w: this.sprite.w - this.sprite.offset.w
+		};
 		var bounds = {
 			r: game.canvas.viewport.w - this.sprite.h - (map.tilesets.tile.w*3),
 			d: game.canvas.viewport.h - this.sprite.w - (map.tilesets.tile.h*3),
@@ -102,8 +106,8 @@ var player = {
 		};
 		// console.log('r:'+bounds.r+' d:'+bounds.d+' u:'+bounds.u+' l:'+bounds.l);
 		// collision check
-		var c = play.getCollisions(loc, d, amt);
-		if (c === false) {
+		var c = play.getCollisions(loc, d, amt, 'player');
+		if (c.flag === false) {
 			var scroll;// = map.queueScroll(d);
 			if (d === 'up' || d === 'down') {
 				if (d === 'up') {

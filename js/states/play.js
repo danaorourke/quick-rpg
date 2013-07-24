@@ -38,7 +38,7 @@ var play = {
 						});
 					}
 				}
-				plant.init(p);
+				this.plant.init(p);
 			}
 		}
 /*		for (i=0;i<e.length;i++) {
@@ -63,10 +63,18 @@ var play = {
 		this.map.update();
 		this.player.update();
 	},
-	getCollisions: function(loc,dir,amt) {
-	// loc = x,y dir = l,r,u,d amt = numeric
-		return this.map.getCollisions(loc,dir,amt);
-//		var p = this.plant.getCollisions(loc,dir,amt)
-		// return plant.getCollisions();
+	getCollisions: function(loc,dir,amt,source) { 	// loc = x,y, h,w dir = l,r,u,d amt = numeric
+		if (typeof source != 'undefined' && source === 'player') {
+			if (this.map.offset.x < 0) loc.x += Math.abs(this.map.offset.x);
+			if (this.map.offset.y < 0) loc.y += Math.abs(this.map.offset.y);
+		}
+		var c = {flag: false};
+		// get plant collisions
+		if (this.plant.getCollisions(loc,dir,amt)) c = {flag: true, type: 'plant'};
+		// get map collisions
+		if (this.map.getCollisions(loc,dir,amt)) c = {flag: true, type: 'map'};
+		// get player collisions
+		// get NPC collisions
+		return c;
 	}
 };

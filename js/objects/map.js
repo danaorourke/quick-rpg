@@ -142,7 +142,11 @@ var map = {
 					h: this.tilesets.tile.h,
 					w: this.tilesets.tile.w
 				}
-			} 
+			},
+			o:  {
+				x: this.offset.x,
+				y: this.offset.y
+			}
 		};
 		return m;
 	},
@@ -199,10 +203,6 @@ var map = {
 	},
 	getCollisions: function(loc,dir,amt) {
 		if (this.maps[this.map].hasOwnProperty('level')) {
-			// check for map offset
-			if (this.offset.x != 0) loc.x = loc.x + Math.abs(this.offset.x);
-			if (this.offset.y != 0) loc.y = loc.y + Math.abs(this.offset.y);
-	
 			// get row
 			if ((loc.y % 32) === 0)	var cur_row = loc.y / 32;
 			else var cur_row = Math.floor(loc.y/ 32)+1;
@@ -230,8 +230,8 @@ var map = {
 				break;
 				case 'right':
 				for (i=1;i<=amt;i++) {
-					if ((loc.x+i) % m.w === 0) new_col = (loc.x+i)/m.w;
-					else new_col = Math.floor((loc.x+i)/m.w)+1;
+					if ((loc.x+loc.w+i) % m.w === 0) new_col = (loc.x+loc.w+i)/m.w;
+					else new_col = Math.floor((loc.x+loc.w+i)/m.w)+1;
 					t.id = c.id[cur_row-1][new_col-1];
 					t.pass = c.pass[t.id-1];
 					if (t.pass === 0 ) return true;
@@ -239,8 +239,8 @@ var map = {
 				break;
 				case 'down':
 				for (i=1;i<=amt;i++) {
-					if ((loc.y+i) % m.h === 0) new_row = (loc.y+i)/m.h;
-					else new_row = Math.floor((loc.y+i)/m.h)+1;
+					if ((loc.y+loc.h+i) % m.h === 0) new_row = (loc.y+loc.h+i)/m.h;
+					else new_row = Math.floor((loc.y+loc.h+i)/m.h)+1;
 					t.id = c.id[new_row-1][cur_col-1];
 					t.pass = c.pass[t.id-1];
 					if (t.pass === 0 ) return true;
