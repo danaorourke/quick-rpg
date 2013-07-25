@@ -42,9 +42,10 @@ var plant = {
 		for (var i=0;i<this.objects.length;i++) {
 			if (this.objects[i].stage < 4) {
 				if ((now - this.objects[i].created) >= ((2*this.objects[i].stage)*this.types[this.objects[i].type].cycle)) this.grow(i);
+			} else if (this.objects[i].stage === 4) {
+				//
 			} else {
-				// check for renew on type.
-					// die or restart from bud stage.
+				// check for renew - or die or restart from bud stage.
 			}
 		}
 	},
@@ -58,7 +59,8 @@ var plant = {
 		} else {		
 			if (typeof d != 'undefined') {
 				if (typeof amt === 'undefined') var amt = 1;
-				var check = {}; var p = {};
+				var check = {};
+				var p = {};
 
 				if (d === 'up' || d === 'down') {
 					check.x = '(p.x <= o.x && (p.x+p.w) >= o.x) || (p.x <= (o.x+o.w) && (p.x+p.w) >= (o.x+o.w))';
@@ -125,7 +127,7 @@ var plant = {
 	},
 	grow: function(id) {
 		this.objects[id].stage++;
-		console.log('id:'+id+' stage:'+this.stages[this.objects[id].stage-1]);
+	//	console.log('id:'+id+' stage:'+this.stages[this.objects[id].stage-1]);
 		this.objects[id].object.className = this.objects[id].type+' '+this.stages[this.objects[id].stage-1];
 	},
 	die: function() {},

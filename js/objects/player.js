@@ -3,7 +3,8 @@ var player = {
 		up: false,
 		down: false,
 		right: false,
-		left: false
+		left: false,
+		interact: false
 	},
 	stats:{hp:100,e:100},
 	object: null,
@@ -58,26 +59,27 @@ var player = {
 	update: function() {
 		document.onkeydown = function(e) {
 			var key;
-			if (document.all)	{e = window.event;}
-			if (document.layers || e.which) {key = e.which;}
-			if (document.all)	{key = e.keyCode;}
+			if (document.all) e = window.event;
+			if (document.layers || e.which) key = e.which;
+			if (document.all) key = e.keyCode;
 //			alert(' [Decimal value = ' + key + ']');		
-			if (key == 87 || key == 38) {player.state.up = true;}
-			else if (key == 83|| key == 40) {player.state.down = true;}
-			if (key == 68 || key == 39) {player.state.right = true;}
-			else if (key == 65 || key == 37) {player.state.left = true;}
+			if (key == 87 || key == 38) player.state.up = true;
+			else if (key == 83|| key == 40) player.state.down = true;
+			if (key == 68 || key == 39) player.state.right = true;
+			else if (key == 65 || key == 37) player.state.left = true;
 			// if key == 
+			if (key == 32) player.state.interact = true;
 			
 		};
 		document.onkeyup = function(e) {
 			var key;
-			if (document.all) {e = window.event;}
-			if (document.layers || e.which) {key = e.which;}
-			if (document.all) {key = e.keyCode;}
-			if (key == 87 || key == 38) {player.state.up = false;}
-			else if (key == 83 || key == 40) {player.state.down = false;}
-			if (key == 68 || key == 39) {player.state.right = false;}
-			else if (key == 65 || key == 37) {player.state.left = false;}
+			if (document.all) e = window.event;
+			if (document.layers || e.which) key = e.which;
+			if (document.all) key = e.keyCode;
+			if (key == 87 || key == 38) player.state.up = false;
+			else if (key == 83 || key == 40) player.state.down = false;
+			if (key == 68 || key == 39) player.state.right = false;
+			else if (key == 65 || key == 37) player.state.left = false;
 			// the animation frame and positions need to be reset to neutral.
 		};
 	},
@@ -86,8 +88,14 @@ var player = {
 		if (this.state.down) this.walk('down');
 		if (this.state.right) this.walk('right');
 		if (this.state.left) this.walk('left');
+		if (this.state.interact) this.interact();
 	},
 	// player specific
+	interact: function() {
+		var loc = {
+			
+		};
+	},
 	walk: function(d) {
 		this.move(d,6);
 		game.animator(this,'walk', d);	

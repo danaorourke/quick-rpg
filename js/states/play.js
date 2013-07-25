@@ -64,6 +64,7 @@ var play = {
 		this.plant.update();
 		this.player.update();
 	},
+	// call all object's collision codes
 	getCollisions: function(loc,dir,amt,source) { 	// loc = x,y, h,w dir = l,r,u,d amt = numeric
 		if (typeof source != 'undefined' && source === 'player') {
 			if (this.map.offset.x < 0) loc.x += Math.abs(this.map.offset.x);
@@ -77,5 +78,8 @@ var play = {
 		// get player collisions
 		// get NPC collisions
 		return c;
+	},
+	generateBoundBox: function(self) {
+		
 	}
 };
