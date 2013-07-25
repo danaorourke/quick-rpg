@@ -66,6 +66,7 @@ var player = {
 			else if (key == 83|| key == 40) {player.state.down = true;}
 			if (key == 68 || key == 39) {player.state.right = true;}
 			else if (key == 65 || key == 37) {player.state.left = true;}
+			// if key == 
 			
 		};
 		document.onkeyup = function(e) {
@@ -76,7 +77,7 @@ var player = {
 			if (key == 87 || key == 38) {player.state.up = false;}
 			else if (key == 83 || key == 40) {player.state.down = false;}
 			if (key == 68 || key == 39) {player.state.right = false;}
-			else if (key == 65 || key == 37) {player.state.left = false;}	
+			else if (key == 65 || key == 37) {player.state.left = false;}
 			// the animation frame and positions need to be reset to neutral.
 		};
 	},

@@ -1,6 +1,6 @@
 var plant = {
 	// declares dependancies - child data, names, for game.getDependancies
-	config: { dependancies: [{src: 'js/world/plants.json', name: ["sprite","states","types"]}] },
+	config: { dependancies: [{src: 'js/world/plants.json', name: ["sprite","stages","types"]}] },
 	events: {
 		flag: false,
 		
@@ -38,7 +38,15 @@ var plant = {
 		game.appendToCanvas(this.canvas,'map');
 	},
 	update: function() {
-		
+		var now =  Math.floor(new Date().getTime()/1000);
+		for (var i=0;i<this.objects.length;i++) {
+			if (this.objects[i].stage < 4) {
+				if ((now - this.objects[i].created) >= ((2*this.objects[i].stage)*this.types[this.objects[i].type].cycle)) this.grow(i);
+			} else {
+				// check for renew on type.
+					// die or restart from bud stage.
+			}
+		}
 	},
 	animate: function() {},
 	// get those collisions
@@ -70,10 +78,7 @@ var plant = {
 						w: this.sprite.w-this.sprite.offset.w
 					};
 					for (var a=1;a<=amt;a++) {
-						if ( (eval(check.y) && eval(check.x))) {
-							console.log("i is "+i);
-							return true;
-						}
+						if ( (eval(check.y) && eval(check.x))) return true;
 					}
 				}
 			}
@@ -91,11 +96,14 @@ var plant = {
 		// create type styles
 		var t = {count:0, names:[]};
 		for (var i in this.types) {t.names.push(i); t.count++;}
-		for (i=0;i<t.count;i++) style += '#plants .'+t.names[i]+' {background-position-x: -' +(this.types[t.names[i]].sprite-1) * this.sprite.w+"px;}\n";
+		for (var i=0;i<t.count;i++) style += '#plants .'+t.names[i]+' {background-position-x: -' +(this.types[t.names[i]].sprite-1) * this.sprite.w+"px;}\n";
+		
 		// create state styles
-		var s = {count: 0, names:[]};
-		for (var i in this.states) {s.names.push(i); s.count++;}
-		for (i=0;i<s.count;i++)	style += '#plants .'+s.names[i]+' {background-position-y: -'+((this.states[s.names[i]]-1)*this.sprite.h)+"px;}\n";
+		for (var i=0;i<=this.stages.length;i++) style += '#plants .'+this.stages[i]+' {background-position-y: -'+((i)*this.sprite.h)+"px;}\n";
+		//var s = {count: 0, names:[]};
+		//for (var i in this.states) {s.names.push(i); s.count++;}
+		//for (i=0;i<s.count;i++)	style += '#plants .'+s.names[i]+' {background-position-y: -'+((this.states[s.names[i]]-1)*this.sprite.h)+"px;}\n";
+		
 		// create style and append to head
 		this.style = document.createElement('style');
 		this.style.type = 'text/css';
@@ -104,8 +112,7 @@ var plant = {
 	},
 	// create new plants, according to type, set to sprout
 	sprout: function(t,id,l) {
-		// change back to sprout!!
-		var o = game.makeNode({wrap:'div',id:t+'_'+id, className: t+' waiting'});
+		var o = game.makeNode({wrap:'div',id:t+'_'+id, className: t+' sprout'});
 		var top = game.makeNode({wrap:'span',className:'top'});
 		var bot = game.makeNode({wrap:'span',className:'bot'});
 		// adjust for height of individual sprout
@@ -113,10 +120,14 @@ var plant = {
 		o.style.left = l.x+'px';
 		o.appendChild(top);
 		o.appendChild(bot);
-		this.objects.push({type: t, created: new Date().getTime(), stage: 5, object: o, loc: l});
+		this.objects.push({type: t, created: Math.floor(new Date().getTime()/1000), stage: 1, object: o, loc: l});
 		this.canvas.appendChild(o);
 	},
-	grow: function(id) {},
+	grow: function(id) {
+		this.objects[id].stage++;
+		console.log('id:'+id+' stage:'+this.stages[this.objects[id].stage-1]);
+		this.objects[id].object.className = this.objects[id].type+' '+this.stages[this.objects[id].stage-1];
+	},
 	die: function() {},
 	seed: function() {}
 };
