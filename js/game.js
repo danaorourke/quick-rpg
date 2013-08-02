@@ -1,133 +1,88 @@
 var game = {
 	config: {
-		started: '',
-		frameRate: 1000/20
+		root: '',
+		frameRate: 1000/20,
+		debug: true,
+		dependancies: {name: 'assets', src: '/js/world/assets.json' }
 	},
-	canvas: {
-		head: null,
-		object: null,
-		viewport: {h:null,w:null},
-	},
-	queue: null, // extend idea to create a framework that only creates here in 'game'.
-	state: 'play',
+	started: null,
+	state: 'play', // switches to loading if new data needed.
+	viewport: {}, // h,w,x,y
 	states: {
-//		start: {active: false, action: '', object: null},
 		play: null
-//		pause: {active: false, action: '', object: null} // this needs to be expanded. should contain inventory, journal, map.
+/*
+		start
+		loading
+		inventory
+		journal
+		map
+		saveGame
+		loadGame
+		newGame
+		pause
+*/
 	},
-	// run to start program.
-	init:function(canvas){
-		// get initial dependancies, start up game.
-		this.canvas.object = document.getElementById(canvas);
-		this.canvas.head = document.getElementsByTagName('head')[0];
-		this.solidifyStates();
-		this.getDependancies();
-		this.getViewport();
+	
+	// boots everything up
+	init: function(canvas) {
+		// make stylesheet hook and append
+		var h = document.getElementsByTagName('head')[0];
+		var s = game.makeNode({wrap: 'style', id:'game_styles'});
+		h.appendChild(s);
+		this.head = document.getElementById('game_styles');
+		delete(h,s);
 		
+		// canvas
+		this.canvas = document.getElementById(canvas);
+		
+		this.solidifyStates();
+		this.solidifyDependancies();
+		this.setViewport();
+		
+		// init start state
 		this.states[this.state].init();
-		this.loop();
-	},	
-	// loop through animations
-	animate: function(){
-		this.states[this.state].animate();
-	},
-	// loop through updates
-	update: function(){
-		// perhaps load the resource the first time it's called for?
-			// load play, start to begin
-			// load pause, inventory, and sell screen once that's loaded.
-		this.getViewport();
-		this.states[this.state].update();
-	},
-	// called by init to start program
-	loop: function(){
+		
+		// start the loop
 		var self = this;
-		setInterval(function() {self.update();self.animate();}, this.config.frameRate);
+		var prevTime = Date.now();
+		this.loop = setInterval(function() {
+			// set up timer
+			var curTime = Date.now();
+			var dt = curTime - prevTime;
+			prevTime = curTime;
+			// call scripts
+			self.setViewport();
+			self.update(dt);
+			self.animate(dt);
+			// clean
+			delete(curTime,dt);
+		}, this.config.frameRate);
 	},
-	// pass data to create the DOM object for class
-	makeNode: function(t){
-		//	var o = {wrap: null, id: null, className: null, content: null};
-		if (t.hasOwnProperty('wrap') && (t.wrap != null && t.wrap != '')) {
-			var o = document.createElement(t.wrap);
-			if (t.hasOwnProperty('id') && (t.id != null && t.id != '')) o.id = t.id;
-			if (t.hasOwnProperty('className') && (t.className != null && t.id != '')) o.className = t.className;
-			if (t.hasOwnProperty('content') && (t.content != null && t.content != '')) o.innerHTML = t.content;
-			return o;
-		} else return false;
+	// used by loop
+	update: function(dt) {
+		this.states[this.state].update(dt);
 	},
-	// put given style element in head
-	appendToHead: function(o) {game.canvas.head.appendChild(o);},
-	// put given object either in the gamespace or inside the specified container.
-	appendToCanvas: function(o,t) {
-		if (t === null || t === undefined) game.canvas.object.appendChild(o);
-		else eval(t).canvas.object.appendChild(o);
+	// used by loop, animates all the states
+	animate: function(dt) {
+		this.states[this.state].animate(dt);
 	},
-	animator: function(that,a,d) {
-		var lastFrame = that.sprite.animation.frame;
-		var bgPos = that.object.style.backgroundPosition;
-		var frames = that.sprite.animations[a][d];
-		if (lastFrame <= 2) {
-			bgPos = '-'+frames['f_'+lastFrame]['x']+'px -'+frames['f_'+lastFrame]['y']+'px';
-			lastFrame++;
-		} else if (lastFrame == 3) {
-			bgPos = '-'+frames['f_2']['x']+'px -'+frames['f_2']['y']+'px';
-			lastFrame++;
-		} else if (lastFrame == 4) {
-			bgPos = '-'+frames['f_1']['x']+'px -'+frames['f_1']['y']+'px';
-			lastFrame++;
-		} else if (lastFrame == 5) {
-			bgPos = '-'+frames['f_0']['x']+'px -'+frames['f_0']['y']+'px';
-			lastFrame = 0;
-		}
-		// reassign values
-		that.sprite.animation.frame = lastFrame;
-		that.object.style.backgroundPosition = bgPos;
-	},
-	// loop through objects for current state and get dependancies
+	// used by States
+	callState: function() {},
+	// solidifies the association between states and the game script
 	solidifyStates: function() {
-		this.canvas.head = document.getElementsByTagName('head')[0];
 		// get the files for the states
 		var states = this.getStates();
+		var s, src;
 		for (i=0;i<states.length;i++) {
-			var s = states['name'][i].toString();
-			var src = 'js/states/'+s+'.js';
+			s = states['name'][i].toString();
+			src = 'js/states/'+s+'.js';
 			// append the state
 			$.ajaxSetup({async:false});
 			$.getScript(src,function(data){game['states'][s] = eval(s);});
 			$.ajaxSetup({async:true});
 		}
 	},
-	getDependancies: function(){
-		var states = this.getStates();
-		for (i=0;i<states.length;i++) {
-			var s = states['name'][i];
-			var o = game['states'][s];
-			if (o.hasOwnProperty('config') && o['config'].hasOwnProperty('dependancies')) {
-				var dep = o['config']['dependancies'];
-				for (j=0;j<dep.length;j++) {
-					var name = dep[j]['name'];
-					$.ajaxSetup({async:false});
-					$.getScript(dep[j]['src'],function(data) {game['states'][s][name] = eval(name);});
-					var c = o[name];
-					// check for dependancies
-					if (c.hasOwnProperty('config') && c.config.hasOwnProperty('dependancies')) {
-						var dep2 = c.config.dependancies;
-						for (k=0;k<dep2.length;k++) {
-							var names = dep2[k].name;
-							// get multiple dependancies
-							$.getJSON(dep2[k]['src'],function(data) {
-								// check for multiple names
-								if (Object.prototype.toString.call(names) === '[object Array]') {
-									for (p=0;p<names.length;p++) c[names[p]] = data[names[p]];
-								} else c[names] = data[names];
-							});
-						}
-					}
-					$.ajaxSetup({async:true});
-				} // end depth.length for
-			}
-		} 
-	},
+	// returns state number and names - please clean this up
 	getStates: function() {
 		var o = {length:0,name:[]};
 		for (var i in this.states) {
@@ -136,22 +91,142 @@ var game = {
 		}
 		return o;
 	},
-	getViewport: function() {
-		this.canvas.viewport = {
-			w: this.canvas.object.offsetWidth,
-			h: this.canvas.object.offsetHeight
-		}
-	}
-	/*getKeyCode: function(dir) {
-		if (dir == 'down') {
-			document.onkeyDown = function(e) {
-				var key;
-				if (document.all) e = window.event;
-				if (document.layers || e.which) key = e.which;
-				if (document.all) key = e.whichKeycode;
-				console.log(key);
-				return key;
+	// grabs all necessary dependancies for scripts - should be discluded in production level
+	// all files should be minified, but don't worry about that, for now.
+	solidifyDependancies: function() {
+		// grab the assets
+		$.ajaxSetup({async:false});
+		$.getJSON(game.config.dependancies.src, function(data) {game[game.config.dependancies.name] = data[game.config.dependancies.name];});
+	
+		var states = this.getStates();
+		for (var i=0;i<states.length;i++) {
+			var s = states['name'][i];
+			var o = game['states'][s];
+			if (o.hasOwnProperty('config') && o['config'].hasOwnProperty('dependancies')) {
+				var dep = o['config']['dependancies'];
+				for (var j=0;j<dep.length;j++) {
+					var name = dep[j]['name'];
+					$.getScript(dep[j]['src'], function(data) {game['states'][s][name] = eval(name);});
+					var c = o[name];
+					// check for dependancies
+					if (c.hasOwnProperty('config') && c.config.hasOwnProperty('dependancies')) {
+						var dep2 = c.config.dependancies;
+						for (var k=0;k<dep2.length;k++) {
+							var names = dep2[k].name;
+							// get multiple dependancies
+							$.getJSON(dep2[k]['src'], function(data) {
+								// check for multiple names
+								if (Object.prototype.toString.call(names) === '[object Array]') {
+									for (p=0;p<names.length;p++) c[names[p]] = data[names[p]];
+								} else c[names] = data[names];
+							});
+						}
+					}
+
+				} // end depth.length for
 			}
 		}
-	}*/
+		$.ajaxSetup({async:true}); 
+	},
+	// ensures the viewport dimensions are accurate - called each frame
+	setViewport: function() {
+		this.viewport.w = this.canvas.offsetWidth;
+		this.viewport.h = this.canvas.offsetHeight;
+		this.canvas.width = this.canvas.style.width = this.canvas.offsetWidth;
+		this.canvas.height = this.canvas.style.height = this.canvas.offsetHeight;
+	},
+	// makes DOM Nodes, passes them back.
+	makeNode: function(o) {
+		var ob = document.createElement(o.wrap);
+		if (o.wrap === 'style') ob.type = 'text/css';
+		if (o.hasOwnProperty('id')) ob.id = o.id;
+		if (o.hasOwnProperty('className')) ob.className = o.className;
+		if (o.hasOwnProperty('innerHTML')) ob.innerHTML = o.innerHTML;
+		if (o.hasOwnProperty('y')) ob.style.top = o.y+'px';
+		if (o.hasOwnProperty('x')) ob.style.left = o.x+'px';
+		if (o.hasOwnProperty('w')) ob.style.width = o.w+'px';
+		if (o.hasOwnProperty('h')) ob.style.height = o.h+'px';
+		return ob;
+	},
+	// adds node to canvas
+	appendNode: function(o) {
+		this.canvas.appendChild(o);
+	},
+	setNode: function(node, object) {
+		this.states[this.state].sprites[node] = object;
+	},
+	appendStyles: function(o) {
+		this.head.innerHTML += o;
+	},
+	animator: function(that,an) {
+		// grap sprite styles
+		var sprite = this.states[this.state].sprites[that.sprite];
+		var h = this.assets.sprites.tile.height;
+
+		// update position
+		sprite.style.top = that.y+'px';
+		sprite.style.left = that.x+'px';
+		sprite.style.zIndex = that.y+h;
+		
+		// assign z index  based on y
+		
+		// fix classes
+		if (typeof an != 'undefined' && an != '') {
+			// set the frame
+			var frame, lastFrame = that.animation.frame;
+			if (lastFrame < 2) frame = 'fr_0';
+			else if (lastFrame < 4) frame = 'fr_1';
+			else if (lastFrame < 8) frame = 'fr_2';
+			else if (lastFrame < 10) frame = 'fr_1';
+			else if (lastFrame < 12) frame = 'fr_0';
+			
+			// incriment frame appropriately
+			if (lastFrame === 11) that.animation.frame = 0;
+			else that.animation.frame++;
+			
+			// assign classes
+			if (that.sprite === 'player') {
+				sprite.className = an+' '+frame;
+			} else {
+				sprite.className = that.type+' '+an+' '+frame;
+			}
+			// incriment frame
+		} else {
+			if (that.sprite === 'player') {
+				sprite.className = that.animation.d+' fr_1';
+			} else {
+				sprite.className = that.type+' '+that.animation.d+' fr_1';
+			}
+		}
+	},
+	makeStyles: function(name) {
+		// return stylesheet to head. - set bg image
+	},
+	makeGeneralStyles: function() {
+	// get assets
+		// get tile h,w
+		var t = {h: this.assets.sprites.tile.height, w: this.assets.sprites.tile.width};
+		// get sprite h,w
+		var s = {h: this.assets.sprites.height, w: this.assets.sprites.width};
+		// get animations - currently assumes one animation with up/down/left/right
+		var a = this.assets.sprites.animations;
+		var a_key = {length: 0, name: []};
+		for (var i in this.assets.sprites.animations) {
+			a_key.length++;
+			a_key.name.push(i);
+		}
+	// make animations css
+		// create y - each animation
+		var styles = "/* Animations */\n";
+		for (var i=0;i<a_key.length;i++) {
+			styles += "\t."+a_key.name[i]+' {background-position-y: -'+(a[a_key.name[i]].y*t.h)+"px;}\n";
+//			console.log(i,a_key.name[i],(a[a_key.name[i]].y*t.h));
+		}
+		// create x - each frame (assumes 3)
+		styles += "/* Frames */\n";
+		for (var i=0;i<3;i++) styles += "\t.fr_"+i+' {background-position-x: -'+(i*t.w)+"px;}\n";
+		styles += "/* End Generated */ \n";
+	// give back to animation loop
+		return styles;
+	}
 };

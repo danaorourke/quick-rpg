@@ -1,0 +1,46 @@
+{"assets": {
+	"root": "/img/",
+	"sprites": {
+		"height": 192,
+		"width": 96,
+		"tile": {
+			"height": 48,
+			"width": 32
+		},
+		"animations": {
+				"down": {"y":0},
+				"left": {"y":1},
+				"right": {"y":2},
+				"up": {"y":3}
+		},
+		"player": {
+			"src": "hero.png",
+			"offset": {
+				"x": 16,
+				"y": 32
+			}
+		},
+		"slime": {
+			"src": "slime.png"
+		},
+		"ogre": {
+			"src": "ogre.png"
+		}
+	},
+	"tilesets": {
+		"tile": {
+			"height": 16,
+			"width": 16
+		},
+		"plowed_soil": {
+			"src": "img/plowed_soil.png",
+			"h": 192,
+			"w": 96
+		},
+		"main": {
+			"src":"img/tileset.png",
+			"h": 192,
+			"w": 480
+		}
+	}
+}}

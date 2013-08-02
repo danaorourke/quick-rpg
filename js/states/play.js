@@ -1,85 +1,99 @@
 var play = {
 	config: {
 		dependancies: [
-			{name: 'map', src: 'js/objects/map.js'},
-//			{name: 'npc', src: 'js/objects/npc.js'},
-			{name: 'plant', src: 'js/objects/plant.js'},
+	//		{name: 'map', src: 'js/objects/map.js'},
+	//		{name: 'plant', src: 'js/objects/plant.js'},
+			{name: 'character', src: 'js/objects/character.js'},
 			{name: 'player', src: 'js/objects/player.js'}
 		]
 	},
-	// spool up everything we need - called by game
-	init: function(){
-		// init the map
-		this.map.init('garden');
-		// get the map's events, generate based on type
-		var e = this.map.getEvents();
-		// check each event
-		for (i=0;i<e.length;i++) {
-			// event is plot - expect a{x,y} b{x,y} plants[ ( type, amount) , etc]
-			if (e[i].type === 'plot') {
-				// check for subtype first to change behavior.
-				// if plot has plants
-				var p = [];
-				if (e[i].hasOwnProperty('plants')) {
-					for (j=0;j<e[i].plants.length;j++) {
-						p.push({
-							type: e[i].plants[j].type,
-							amt: e[i].plants[j].amt,
-							loc: {
-								a:	{
-									x: e[i].a.x,
-									y: e[i].a.y
-								},
-								b:	{
-									x: e[i].b.x,
-									y: e[i].b.y
-								}
-							}
-						});
-					}
-				}
-				this.plant.init(p);
-			}
+	styles: null,
+	sprites: {}, // contains the sprite objects for each of the above
+	objects: [],
+	
+	init: function() {
+		this.styles = game.makeGeneralStyles();
+	// boot everything up
+		for (var i = 0; i < 1; i++) {
+			var o = new character('ogre'+i,'ogre');
+			this.objects.push(o);
+			game.appendNode(this.sprites['ogre'+i]);
+			delete(o);
 		}
-/*		for (i=0;i<e.length;i++) {
-			if (e[i].type === 'plot') {
-				if (e[i].hasOwnProperty('plants') && e[i].plants.length > 0) {
-					var x, y;
-					for (j=0;j<e[i].plants.length) {
-						console.log(e[i].plants[j]);
-					}
+		player.init();
+		
+		// append all the bits to canvas.
+		game.appendStyles(this.styles);
+//		var s = this.sprites.length;
+//		for (var i = 0; i < s; i++) game.appendNode(this.sprites[i])
+		game.appendNode(this.sprites.player);
+	},
+	update: function(dt) {
+		// collect all user input
+		document.onkeydown = function(e) {
+			var key;
+			if (document.all) e = window.event;
+			if (document.layers || e.which) key = e.which;
+			if (document.all) key = e.keyCode;
+//			alert(' [Decimal value = ' + key + ']');
+			// player based control
+			if (key == 87 || key == 38) player.state.up = true;
+			else if (key == 83|| key == 40) player.state.down = true;
+			else if (key == 68 || key == 39) player.state.right = true;
+			else if (key == 65 || key == 37) player.state.left = true;
+		};
+		document.onkeyup = function(e) {
+			var key;
+			if (document.all) e = window.event;
+			if (document.layers || e.which) key = e.which;
+			if (document.all) key = e.keyCode;
+			if (key == 87 || key == 38) player.state.up = false;
+			else if (key == 83 || key == 40) player.state.down = false;
+			else if (key == 68 || key == 39) player.state.right = false;
+			else if (key == 65 || key == 37) player.state.left = false;
+			// the animation frame and positions need to be reset to neutral.
+			// interact on key up = space
+			if (key == 32) player.state.interact = true;
+		};
+		// iterate through automatic child changes
+		this.player.update(dt);
+		var c = this.objects.length;
+		for (var i = 0; i < c; i++) this.objects[i].update(dt);
+	},
+	animate: function(dt) {
+		this.player.animate(dt);
+		var c = this.objects.length;
+		for (var i = 0; i < c; i++) this.objects[i].animate(dt);
+	},
+	returnCollisions: function(o,d,amt,source) {
+		// o = {x, y, h, w } d = str, amt = int, source = string
+//		if (typeof source != 'undefined' && source === 'player') {
+			// constrain player to viewport bounds - queue scroll map, if necessarys
+			// restricts, currently, to play area. restrict to scroll area, next.
+			var bounds = { up: 0, down: game.viewport.h, left: 0, right: game.viewport.w };
+			// set check
+			var check;
+			if (d === 'up') check = o.y;
+			if (d === 'down') check = o.y+play.sprites[source].offsetHeight;
+			if (d === 'left') check = o.x;
+			if (d === 'right') check = o.x+play.sprites[source].offsetWidth;
+			// perform checks
+			if (d === 'left' || d === 'up') {
+				for (var a = 1; a <= amt; a++) {
+					if ((check-a) <= bounds[d]) return true;
 				}
 			}
-		}*/
-		
-		// add the player
-		this.player.init();
+			if (d === 'right' || d === 'down') {
+				for (var a = 1; a <= amt; a++) {
+					if ((check+a) >= bounds[d]) return true;
+				}
+			}
+		return false;
 	},
-	animate: function(){
-		this.map.animate();
-		this.player.animate();
-	},
-	update: function(){
-		this.map.update();
-		this.plant.update();
-		this.player.update();
-	},
-	// call all object's collision codes
-	getCollisions: function(loc,dir,amt,source) { 	// loc = x,y, h,w dir = l,r,u,d amt = numeric
-		if (typeof source != 'undefined' && source === 'player') {
-			if (this.map.offset.x < 0) loc.x += Math.abs(this.map.offset.x);
-			if (this.map.offset.y < 0) loc.y += Math.abs(this.map.offset.y);
-		}
-		var c = {flag: false};
-		// get plant collisions
-		if (this.plant.getCollisions(loc,dir,amt)) c = {flag: true, type: 'plant'};
-		// get map collisions
-		if (this.map.getCollisions(loc,dir,amt)) c = {flag: true, type: 'map'};
-		// get player collisions
-		// get NPC collisions
-		return c;
-	},
-	generateBoundBox: function(self) {
-		
+	move: function(d, amt, that) {
+		if (d === 'up') that.y -= amt;
+		if (d === 'down') that.y += amt;
+		if (d === 'left') that.x -= amt;
+		if (d === 'right') that.x += amt;
 	}
 };
