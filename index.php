@@ -16,7 +16,6 @@
 <body lang="en">
 	<header id="header"><h1>Because Garden</h1></header>
 	<section id="gamespace"></section>
-	<section id="test"></section>
 	<footer id="footer">Cup of Tea Creations &copy;2013</footer>
 	<script type="text/javascript" src="js/game.js"></script>
 	<script type="text/javascript">		

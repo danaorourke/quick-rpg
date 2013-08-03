@@ -15,7 +15,9 @@ function mob(name, type) {
 	}
 	var o = {wrap: 'div', id: name, x: this.x, y: this.y};
 	if (typeof type != 'undefined') o.className = type;
+	
 	game.setNode(name, game.makeNode(o));	
+	
 	delete(o);
 }
 mob.prototype.update = function(dt) {
@@ -46,7 +48,10 @@ mob.prototype.animate = function(dt) {
 };
 mob.prototype.walk = function(d,dt) {
 	var amt = Math.floor(.05*dt);
-//	var c = play.returnCollisions({x:this.x,y:this.y}, d, amt, this.sprite);
-	if (c === false) play.move(d,amt,this);
+	var c = play.returnCollisions({x:this.x,y:this.y}, d, amt, this.sprite);
+	if (c === false) {
+		this.d = d;
+		play.move(d,amt,this);
+	}
 	delete(c);
 };

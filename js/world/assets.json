@@ -21,7 +21,11 @@
 			}
 		},
 		"slime": {
-			"src": "slime.png"
+			"src": "slime.png",
+			"offset": {
+				"x": 16,
+				"y": 32
+			}
 		},
 		"ogre": {
 			"src": "ogre.png",

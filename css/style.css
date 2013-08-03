@@ -36,7 +36,9 @@ a, a:visited {color: #080808; text-decoration: none;}
 	#map {background: #2f8136; position: absolute; top: 0; left: 0;}
 /*		#ground span {background-image: url('../img/plowed_soil.png'); float: left; height: 32px; width: 32px;}*/
 
-	#player {background: url('../img/hero.png'); height: 48px; position: absolute; width: 32px; z-index: 2;}
+	#player {background-image: url('../img/hero.png'); height: 48px; position: absolute; width: 32px; z-index: 2;}
+	.slime {background-image: url('/img/slime.png'); height: 48px; position: absolute; width: 32px;}
+	.ogre {background-image: url('/img/ogre.png'); height: 48px; position: absolute; width: 32px;}
 	.above {z-index: 3;}
 	
 	#test {width: 96px; position: absolute; right: 40px; top:200px;}

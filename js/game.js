@@ -3,7 +3,10 @@ var game = {
 		root: '',
 		frameRate: 1000/20,
 		debug: true,
-		dependancies: {name: 'assets', src: '/js/world/assets.json' }
+		dependancies: [
+			{name: 'assets', src: '/js/world/assets.json'},
+			{name: 'mobs', src: '/js/world/mobs.json'}
+		]
 	},
 	started: null,
 	state: 'play', // switches to loading if new data needed.
@@ -96,7 +99,15 @@ var game = {
 	solidifyDependancies: function() {
 		// grab the assets
 		$.ajaxSetup({async:false});
-		$.getJSON(game.config.dependancies.src, function(data) {game[game.config.dependancies.name] = data[game.config.dependancies.name];});
+		var d = game.config.dependancies.length, dep = {};
+		for (var i = 0; i < d; i++) {
+			// quick set vars
+			dep.src = game.config.dependancies[i].src;
+			dep.name = game.config.dependancies[i].name;
+//			console.log(dep);
+			// call json
+			$.getJSON(dep.src, function (data) { game[dep.name] = data[dep.name]; });
+		}
 	
 		var states = this.getStates();
 		for (var i=0;i<states.length;i++) {
@@ -162,7 +173,6 @@ var game = {
 		// grap sprite styles
 		var sprite = this.states[this.state].sprites[that.sprite];
 		var h = this.assets.sprites.tile.height;
-
 		// update position
 		sprite.style.top = that.y+'px';
 		sprite.style.left = that.x+'px';
@@ -180,6 +190,8 @@ var game = {
 			else if (lastFrame < 10) frame = 'fr_1';
 			else if (lastFrame < 12) frame = 'fr_0';
 			
+			if (an === 'idle') frame = 'fr_1';
+			
 			// incriment frame appropriately
 			if (lastFrame === 11) that.animation.frame = 0;
 			else that.animation.frame++;
@@ -190,6 +202,7 @@ var game = {
 			} else {
 				sprite.className = that.type+' '+an+' '+frame;
 			}
+			
 			// incriment frame
 		} else {
 			if (that.sprite === 'player') {
