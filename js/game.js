@@ -210,8 +210,11 @@ var game = {
 			}
 		}
 	},
-	makeStyles: function(name) {
-		// return stylesheet to head. - set bg image
+	getAsset: function(name) {
+		var asset = this.assets.sprites[name];
+		asset.h = this.assets.sprites.tile.height;
+		asset.w = this.assets.sprites.tile.width;
+		return asset;
 	},
 	makeGeneralStyles: function() {
 	// get assets

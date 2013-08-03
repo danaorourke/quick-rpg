@@ -51,10 +51,8 @@ mob.prototype.createStats = function() {
 	this.lastUpdate = 0;
 	this.created = Date.now();
 };
-mob.prototype.animate = function(dt) {
-	game.animator(this);	
-};
-mob.prototype.walk = function(d,dt) {	
+mob.prototype.animate = function(dt) { game.animator(this);	};
+mob.prototype.walk = function(d, dt) {	
 	if (d != 'idle') {
 		this.animation.d = this.animation.name = d;
 		var amt = Math.floor((this.stats.speed/100)*dt);

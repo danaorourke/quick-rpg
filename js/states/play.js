@@ -11,6 +11,7 @@ var play = {
 	objects: [],
 	
 	init: function() {
+		this.bounds = { up: 0, down: game.viewport.h, left: 0, right: game.viewport.w };
 		this.styles = game.makeGeneralStyles();
 	// boot everything up
 		for (var i = 0; i < 1; i++) {
@@ -36,7 +37,7 @@ var play = {
 		};
 		this.objects.push(this.player);
 		game.appendNode(this.sprites['player']);
-		
+
 		
 		// append all the bits to canvas.
 		game.appendStyles(this.styles);
@@ -84,19 +85,29 @@ var play = {
 		for (var i = 0; i < c; i++) this.objects[i].animate(dt);
 	},
 	returnCollisions: function(that, amt) {
-		// o = {x, y, h, w } d = str, amt = int, source = string
 	// restrict objects to play area
-		var bounds = { up: 0, down: game.viewport.h, left: 0, right: game.viewport.w },
-			check,
-			d = that.animation.d;
-
-		// check direction
+		var	check,
+			bounds = this.bounds,
+			d = that.animation.d,
+			asset = game.getAsset(that.type);
+		// check direction - define check from that
 		if (d === 'up') check = that.y;
-		if (d === 'down') check = that.y+play.sprites[that.sprite].offsetHeight;
+		if (d === 'down') check = that.y+asset.h;
 		if (d === 'left') check = that.x;
-		if (d === 'right') check = that.x+play.sprites[that.sprite].offsetWidth;
+		if (d === 'right') check = that.x+asset.w;
 
-		// perform checks
+		// check for other mobs
+		var c = this.objects.length, o;
+		for (var i = 0; i < c; i++) {
+			o = this.objects[i];
+			// create check for object 
+			for (var a = 1; a <= amt; a ++) {
+				if (check-a <= o) {
+					
+				}
+			}
+		}
+		// perform checks for boundary
 		if (d === 'left' || d === 'up') {
 			for (var a = 1; a <= amt; a++) {
 				if ((check-a) <= bounds[d]) return true;
@@ -107,6 +118,7 @@ var play = {
 				if ((check+a) >= bounds[d]) return true;
 			}
 		}
+		
 		
 		// grats - you've hit nothing
 		return false;
