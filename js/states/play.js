@@ -83,16 +83,19 @@ var play = {
 		var c = this.objects.length;
 		for (var i = 0; i < c; i++) this.objects[i].animate(dt);
 	},
-	returnCollisions: function(o,d,amt,source) {
+	returnCollisions: function(that, amt) {
 		// o = {x, y, h, w } d = str, amt = int, source = string
-// restrict objects to play area
-		var bounds = { up: 0, down: game.viewport.h, left: 0, right: game.viewport.w };
-		// set check
-		var check;
-		if (d === 'up') check = o.y;
-		if (d === 'down') check = o.y+play.sprites[source].offsetHeight;
-		if (d === 'left') check = o.x;
-		if (d === 'right') check = o.x+play.sprites[source].offsetWidth;
+	// restrict objects to play area
+		var bounds = { up: 0, down: game.viewport.h, left: 0, right: game.viewport.w },
+			check,
+			d = that.animation.d;
+
+		// check direction
+		if (d === 'up') check = that.y;
+		if (d === 'down') check = that.y+play.sprites[that.sprite].offsetHeight;
+		if (d === 'left') check = that.x;
+		if (d === 'right') check = that.x+play.sprites[that.sprite].offsetWidth;
+
 		// perform checks
 		if (d === 'left' || d === 'up') {
 			for (var a = 1; a <= amt; a++) {
@@ -104,6 +107,9 @@ var play = {
 				if ((check+a) >= bounds[d]) return true;
 			}
 		}
+		
+		
+		// grats - you've hit nothing
 		return false;
 	},
 	move: function(d, amt, that) {

@@ -8,7 +8,7 @@ function mob(name, type) {
 		this.type = type;
 
 	} else {
-		this.type = 'player';
+		this.type = name;
 		this.x = 200;
 		this.y = 200;
 	}
@@ -59,7 +59,7 @@ mob.prototype.walk = function(d,dt) {
 	
 	if (d != 'idle') {
 		this.animation.d = this.animation.name = d;
-		var c = play.returnCollisions({x:this.x,y:this.y}, d, amt, this.sprite);
+		var c = play.returnCollisions(this, amt);
 	}
 	else {
 		var c = false;
