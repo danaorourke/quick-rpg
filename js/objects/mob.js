@@ -1,11 +1,8 @@
-function character(name,type) {
+function mob(name, type) {
 	// get these from the assets!!
-	this.created = Date.now();
-	this.stats = {hp: 100};
-	this.sprite = name;
-	this.lastUpdate = 0;
-	this.animation = {d: null, frame: 1};
-	this.state = { up: false, down: false, right: false, interact: false };
+	this.sprite = name;	
+	this.createStats();
+
 	// set x, y
 	if (typeof type != 'undefined') {
 		this.x = Math.floor(Math.random()*(game.viewport.w-game.assets.sprites.tile.width));
@@ -21,7 +18,7 @@ function character(name,type) {
 	game.setNode(name, game.makeNode(o));	
 	delete(o);
 }
-character.prototype.update = function(dt) {
+mob.prototype.update = function(dt) {
 	// behavioral updates and checks go here.
 	if (this.lastUpdate === 0) {
 		this.d = Math.floor(Math.random()*5);
@@ -35,12 +32,21 @@ character.prototype.update = function(dt) {
 	this.walk(this.d, dt);
 	this.lastUpdate++;
 };
-character.prototype.animate = function(dt) {
+mob.prototype.createStats = function() {
+	// go through the asset file and get the appropriate stats - variance.
+	this.created = Date.now();
+	this.stats = {hp: 100};
+	this.state = { up: false, down: false, right: false };
+	this.animation = {d: null, frame: 1};
+	this.lastUpdate = 0;
+
+};
+mob.prototype.animate = function(dt) {
 	game.animator(this,this.d);	
 };
-character.prototype.walk = function(d,dt) {
+mob.prototype.walk = function(d,dt) {
 	var amt = Math.floor(.05*dt);
-	var c = play.returnCollisions({x:this.x,y:this.y},d,amt,this.sprite);
+//	var c = play.returnCollisions({x:this.x,y:this.y}, d, amt, this.sprite);
 	if (c === false) play.move(d,amt,this);
 	delete(c);
 };

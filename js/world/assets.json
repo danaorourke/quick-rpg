@@ -24,7 +24,11 @@
 			"src": "slime.png"
 		},
 		"ogre": {
-			"src": "ogre.png"
+			"src": "ogre.png",
+			"offset": {
+				"x": 0,
+				"y": 32
+			}
 		}
 	},
 	"tilesets": {
