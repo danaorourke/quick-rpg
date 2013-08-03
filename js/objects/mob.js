@@ -1,8 +1,6 @@
 function mob(name, type) {
 	// get these from the assets!!
 	this.sprite = name;	
-	this.createStats();
-
 	// set x, y
 	if (typeof type != 'undefined') {
 		this.x = Math.floor(Math.random()*(game.viewport.w-game.assets.sprites.tile.width));
@@ -10,10 +8,12 @@ function mob(name, type) {
 		this.type = type;
 
 	} else {
-		this.type = player;
+		this.type = 'player';
 		this.x = 200;
 		this.y = 200;
 	}
+	this.createStats();
+	
 	var o = {wrap: 'div', id: name, x: this.x, y: this.y};
 	if (typeof type != 'undefined') o.className = type;
 	
@@ -36,24 +36,26 @@ mob.prototype.update = function(dt) {
 	this.lastUpdate++;
 };
 mob.prototype.createStats = function() {
-	// go through the asset file and get the appropriate stats - variance.
-	this.created = Date.now();
-	this.stats = {hp: 100};
-
-	// for all
-	this.state = { up: false, down: false, right: false };
-	this.animation = {
-		name: 'idle',
-		d: null,
-		frame: 1
+	// get asset type
+	var type = game.mobs[this.type].stats;
+		
+	// create start mob stats from type
+	this.stats = {
+		hp: type.hp,
+		speed: type.speed
 	};
+	
+	// for all
+	this.state = { up:false, down:false, right:false };
+	this.animation = { name:'idle', d:null, frame:1 };
 	this.lastUpdate = 0;
+	this.created = Date.now();
 };
 mob.prototype.animate = function(dt) {
 	game.animator(this);	
 };
 mob.prototype.walk = function(d,dt) {
-	var amt = Math.floor(.05*dt);
+	var amt = Math.floor((this.stats.speed/100)*dt);
 	
 	if (d != 'idle') {
 		this.animation.d = this.animation.name = d;
