@@ -169,7 +169,7 @@ var game = {
 	appendStyles: function(o) {
 		this.head.innerHTML += o;
 	},
-	animator: function(that,an) {
+	animator: function(that) {
 		// grap sprite styles
 		var sprite = this.states[this.state].sprites[that.sprite];
 		var h = this.assets.sprites.tile.height;
@@ -181,16 +181,14 @@ var game = {
 		// assign z index  based on y
 		
 		// fix classes
-		if (typeof an != 'undefined' && an != '') {
+		if (that.animation.name != 'idle') {
 			// set the frame
-			var frame, lastFrame = that.animation.frame;
+			var frame, lastFrame = that.animation.frame, dir = that.animation.d;
 			if (lastFrame < 2) frame = 'fr_0';
 			else if (lastFrame < 4) frame = 'fr_1';
 			else if (lastFrame < 8) frame = 'fr_2';
 			else if (lastFrame < 10) frame = 'fr_1';
 			else if (lastFrame < 12) frame = 'fr_0';
-			
-			if (an === 'idle') frame = 'fr_1';
 			
 			// incriment frame appropriately
 			if (lastFrame === 11) that.animation.frame = 0;
@@ -198,9 +196,9 @@ var game = {
 			
 			// assign classes
 			if (that.sprite === 'player') {
-				sprite.className = an+' '+frame;
+				sprite.className = dir+' '+frame;
 			} else {
-				sprite.className = that.type+' '+an+' '+frame;
+				sprite.className = that.type+' '+dir+' '+frame;
 			}
 			
 			// incriment frame

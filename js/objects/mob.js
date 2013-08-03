@@ -10,6 +10,7 @@ function mob(name, type) {
 		this.type = type;
 
 	} else {
+		this.type = player;
 		this.x = 200;
 		this.y = 200;
 	}
@@ -38,20 +39,31 @@ mob.prototype.createStats = function() {
 	// go through the asset file and get the appropriate stats - variance.
 	this.created = Date.now();
 	this.stats = {hp: 100};
-	this.state = { up: false, down: false, right: false };
-	this.animation = {d: null, frame: 1};
-	this.lastUpdate = 0;
 
+	// for all
+	this.state = { up: false, down: false, right: false };
+	this.animation = {
+		name: 'idle',
+		d: null,
+		frame: 1
+	};
+	this.lastUpdate = 0;
 };
 mob.prototype.animate = function(dt) {
-	game.animator(this,this.d);	
+	game.animator(this);	
 };
 mob.prototype.walk = function(d,dt) {
 	var amt = Math.floor(.05*dt);
-	var c = play.returnCollisions({x:this.x,y:this.y}, d, amt, this.sprite);
-	if (c === false) {
-		this.d = d;
-		play.move(d,amt,this);
+	
+	if (d != 'idle') {
+		this.animation.d = this.animation.name = d;
+		var c = play.returnCollisions({x:this.x,y:this.y}, d, amt, this.sprite);
 	}
+	else {
+		var c = false;
+		this.animation.name = d;
+	}
+	
+	if (c === false) play.move(d,amt,this);
 	delete(c);
 };

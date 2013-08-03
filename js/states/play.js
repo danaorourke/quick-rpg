@@ -24,10 +24,14 @@ var play = {
 		// where the hell should this actually go?
 		this.player.update = function(dt) {
 			// stats effect checks go here.
-			if (this.state.up) this.walk('up', dt);
-			if (this.state.down) this.walk('down', dt);
-			if (this.state.right) this.walk('right', dt);
-			if (this.state.left) this.walk('left', dt);
+			if (this.state.up || this.state.down || this.state.left || this.state.right) {
+				if (this.state.up) this.walk('up', dt);
+				if (this.state.down) this.walk('down', dt);
+				if (this.state.right) this.walk('right', dt);
+				if (this.state.left) this.walk('left', dt);
+			} else {
+				this.walk('idle',dt);
+			}
 			if (this.state.interact) this.interact();
 		};
 		this.objects.push(this.player);
