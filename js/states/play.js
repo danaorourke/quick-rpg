@@ -26,9 +26,9 @@ var play = {
 			// stats effect checks go here.
 			if (this.state.up || this.state.down || this.state.left || this.state.right) {
 				if (this.state.up) this.walk('up', dt);
-				if (this.state.down) this.walk('down', dt);
-				if (this.state.right) this.walk('right', dt);
-				if (this.state.left) this.walk('left', dt);
+				else if (this.state.down) this.walk('down', dt);
+				else if (this.state.right) this.walk('right', dt);
+				else if (this.state.left) this.walk('left', dt);
 			} else {
 				this.walk('idle',dt);
 			}
@@ -107,7 +107,6 @@ var play = {
 				if ((check+a) >= bounds[d]) return true;
 			}
 		}
-		
 		
 		// grats - you've hit nothing
 		return false;

@@ -54,11 +54,10 @@ mob.prototype.createStats = function() {
 mob.prototype.animate = function(dt) {
 	game.animator(this);	
 };
-mob.prototype.walk = function(d,dt) {
-	var amt = Math.floor((this.stats.speed/100)*dt);
-	
+mob.prototype.walk = function(d,dt) {	
 	if (d != 'idle') {
 		this.animation.d = this.animation.name = d;
+		var amt = Math.floor((this.stats.speed/100)*dt);
 		var c = play.returnCollisions(this, amt);
 	}
 	else {
