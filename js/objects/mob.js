@@ -5,6 +5,8 @@ function mob(name, type) {
 	if (typeof type != 'undefined') {
 		this.x = Math.floor(Math.random()*(game.viewport.w-game.assets.sprites.tile.width));
 		this.y = Math.floor(Math.random()*(game.viewport.h-game.assets.sprites.tile.height));
+	//	this.y = 150;
+	//	this.x = 200;
 		this.type = type;
 
 	} else {
@@ -25,6 +27,7 @@ mob.prototype.update = function(dt) {
 	// behavioral updates and checks go here.
 	if (this.lastUpdate === 0) {
 		this.d = Math.floor(Math.random()*5);
+	//	this.d = 5;
 		if (this.d === 1) this.d = 'up';
 		else if (this.d === 2) this.d = 'down';
 		else if (this.d === 3) this.d = 'right';
@@ -62,7 +65,6 @@ mob.prototype.walk = function(d, dt) {
 		var c = false;
 		this.animation.name = d;
 	}
-	
 	if (c === false) play.move(d,amt,this);
 	delete(c);
 };

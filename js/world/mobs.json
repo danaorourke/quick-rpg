@@ -1,0 +1,20 @@
+{ "mobs": {
+	"player" : {
+		"stats": {
+			"hp": 100,
+			"speed": 9
+		}
+	},
+	"slime": {
+		"stats": {
+			"hp": 20,
+			"speed": 7
+		}
+	},
+	"ogre": {
+		"stats": {
+			"hp": 200,
+			"speed": 5
+		}
+	}
+}}
