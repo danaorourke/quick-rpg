@@ -107,7 +107,7 @@ var play = {
 			}				
 			self.x1 = that.x;
 			self.x2 = that.x+asset.w;
-		} else if (d === 'left' || d === 'right') {
+		} else {
 			if (d === 'left') {
 				self.x = that.x;
 				self.bound = that.x;
@@ -121,6 +121,25 @@ var play = {
 	// check for other mobs
 		for (i = 0; i < count; i++) {
 			otherAsset = game.getAsset(this.objects[i].type);
+			if (d === 'up' || d === 'down') {
+				other.x1 = this.objects[i].x;
+				other.x2 = this.objects[i].x + otherAsset.w;
+				if (d === 'up') {
+					other.y = this.objects[i].y + otherAsset.h;
+
+				} else {
+					other.y = this.objects[i].y + otherAsset.offset.y;
+				}
+			} else {
+				other.y1 = this.objects[i].y + otherAsset.offset.y;
+				other.y2 = this.objects[i].y + otherAsset.h;
+				if (d === 'left') {
+					other.x = this.objects[i].x + otherAsset.w;
+				} else {
+					other.x = this.objects[i].x;
+				}
+			}
+/*
 			if (d === 'up') {
 				// define other checks
 				other.y = this.objects[i].y + otherAsset.h;
@@ -166,6 +185,7 @@ var play = {
 					}
 				}
 			}
+*/
 		}		
 	// check for walls	
 		// perform checks for boundary
